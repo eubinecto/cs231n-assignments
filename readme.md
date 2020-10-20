@@ -1,7 +1,7 @@
 # cs231n-assignments
 Solutions to assignments for cs231n with explanations.
 
-## assignment 1
+## Assignment 1
 number | task | status
 --- | --- | --- |
 Q1 | k-Nearest Neighbor classifier | on progress
