@@ -3,9 +3,11 @@ import numpy as np
 from assignment1.cs231n.data_utils import load_CIFAR10
 import matplotlib.pyplot as plt
 from assignment1.cs231n.classifiers.k_nearest_neighbor.script import KNearestNeighbor
-
+from config import ROOT_DIR
+from os import path
 # Load the raw CIFAR-10 data.
-CIFAR10_DIR = 'cs231n/datasets/cifar-10-batches-py'
+# had to put the absolute path. how do I get the root directory?
+CIFAR10_DIR = path.join(ROOT_DIR, "assignment1/cs231n/datasets/cifar-10-batches-py")
 
 X_train, y_train, X_test, y_test = load_CIFAR10(CIFAR10_DIR)
 
@@ -233,3 +235,5 @@ print('Got %d / %d correct => accuracy: %f' % (num_correct, num_test, accuracy))
 
 # -- inline question 3 -- #
 
+if __name__ == '__main__':
+    pass
