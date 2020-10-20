@@ -2,13 +2,13 @@
 Solutions to assignments for cs231n with explanations.
 
 ## Assignment 1
-number | task | status
---- | --- | --- |
-Q1 | k-Nearest Neighbor classifier | on progress
-Q2 | Training a Support Vector Machine | pending
-Q3 | Implement a Softmax classifier |  pending
-Q4 | Two-Layer Neural Network pending | pending
-Q5 |  Higher Level Representations Image Features | pending
+number | task | status | algorithm | notebook
+--- | --- | --- | --- | --- |
+Q1 | k-Nearest Neighbor classifier | on progress | [k_nearest_neighbor](https://github.com/eubinecto/cs231n-assignments/tree/main/assignment1/cs231n/classifiers/k_nearest_neighbor) | [knn](https://github.com/eubinecto/cs231n-assignments/tree/main/assignment1/knn)
+Q2 | Training a Support Vector Machine | pending | ... | ... 
+Q3 | Implement a Softmax classifier |  pending |  ... | ...
+Q4 | Two-Layer Neural Network pending | pending |  ... | ...
+Q5 |  Higher Level Representations Image Features | pending|  ... | ...
 
 
 ## Assignment 2

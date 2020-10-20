@@ -9,7 +9,7 @@
 ### Why should you use KNN?
 Though possible, Rule-based approach for image classification is brittle, and scales poorly with new data.
 
-A better approach is Data-driven approach, and KNN is the most simplest algorithm
+A better approach is Data-driven approach, and KNN is the most simplest data-driven approach.
 
 ## How's
 ### How does `train` work?
@@ -18,27 +18,37 @@ Simply memorise train and test data.
 ### How does `predict` work?
 write out the pseudo algorithm here.
 
-### How do you optimise the hyper parameter `k`?
+### How do you tune the hyper parameter `k`?
+By trial & error. Link to cross validation. 
+
+There could be three ways of doing this.
+- tune on the entire dataset -> terrible
+- split to train / test and tune on the test set -> terrible
+- split into  train / validation / test and tune on the validation set -> recommended
+- use cross validation -> the gold standard, but beware that it is computationally expensive for dataset with huge size. 
 
  
 ## Limits
-### computationally expensive `predict`
+### Computationally expensive `predict`
 In knn, `train` runs in O(1) time (since it is simply "memorizing" the training data), whereas `predict`
  runs in O(n) time, where n is the size of the training data points. 
 
 Generally, what we want is the opposite; we want to spend as much time as possible on `train`
  for the sake of fast `predict`, so that - e.g. we can run the classifier on mobile phones.
  
-### curse of dimensionality
+### Curse of dimensionality
+
+curse of dimensionality |
+--- |
+![](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/6d8d9446-70a0-44d2-8644-905adfa646a8/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20201020%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20201020T071838Z&X-Amz-Expires=86400&X-Amz-Signature=deca1aefa1741fde6453ba832deb7777696641e3a2d26c2e85e5d24b52ce25c3&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22Untitled.png%22)| 
+
 In principle, in order for KNN to perform at its best, the data space must be densely filled with training data.
-Yet, as the dimensionality grows higher (i.e. number of features to train from increases)
+Yet, as the dimensionality grows higher (i.e. number of features to train from increases), the number of data points
+required to densely fill the data space **grows exponentially**.
+
 
 ## Alternatives
-For its limits as as explained above, KNN is almost never used for image classification 
-(though it's a good starting point for its simplicity).
+For its limits as explained above, KNN is almost never used for image classification 
+(though it's a good starting point to learn data-driven algorithms, hyper paramter tuning, etc for its simplicity).
 
  -> link to linear classifier, svm, neural network, etc.
-
-## questions
-
-Why are we doing multiple loops with KNN?
