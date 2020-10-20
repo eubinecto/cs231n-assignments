@@ -10,6 +10,7 @@ class KNearestNeighbor(object):
     """ a kNN classifier with L2 distance """
 
     def __init__(self):
+        # to be initialised.
         self.X_train: Optional[np.array] = None
         self.y_train: Optional[np.array] = None
 
@@ -17,7 +18,6 @@ class KNearestNeighbor(object):
         """
         Train the classifier. For k-nearest neighbors this is just
         memorizing the training data.
-
         Inputs:
         - X: A numpy array of shape (num_train, D) containing the training data
           consisting of num_train samples each of dimension D.
