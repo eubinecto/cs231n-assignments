@@ -47,7 +47,7 @@ Yet, as the dimensionality grows higher (i.e. number of features to train from i
 required to densely fill the data space **grows exponentially**.
 
 
-## Alternatives
+## Relations to other algorithms.
 For its limits as explained above, KNN is almost never used for image classification 
 (though it's a good starting point to learn data-driven algorithms, hyper paramter tuning, etc for its simplicity).
 
