@@ -412,7 +412,7 @@ def main():
         #######################################
         """
     ))
-    best_k = 15
+    best_k = 10
     print("best k: " + str(best_k))
     knn_cls.train(cifar10.X_train, cifar10.y_train)
     dists = knn_cls.compute_distances_no_loops(cifar10.X_test)
