@@ -6,6 +6,7 @@ from assignment1.cs231n.classifiers.k_nearest_neighbor.script import KNearestNei
 from config import ROOT_DIR
 from os import path
 from dataclasses import dataclass
+import copy
 
 # the path to CIFAR10 data
 # make sure you've run get_datasets.sh script
@@ -14,7 +15,7 @@ CIFAR10_DIR = path.join(ROOT_DIR, "assignment1/cs231n/datasets/cifar-10-batches-
 # the idx to each class is the value for y_train, y_test
 CLASSES = ['plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
 # the number of sub samples to use for this exercise
-# not using the entire dataset for efficient execution
+# not using the entire dataset for efficient execution (remember, prediction with KNN runs in O(n) time)
 NUM_TRAIN = 5000
 NUM_TEST = 500
 
@@ -75,12 +76,28 @@ def subsample_cifar10(cifar10: Dataset):
     cifar10.y_test = cifar10.y_test[range(NUM_TEST)]
 
 
-#
-# # Reshape the image data into rows
-# X_train = np.reshape(X_train, (X_train.shape[0], -1))
-# X_test = np.reshape(X_test, (X_test.shape[0], -1))
-# print(X_train.shape, X_test.shape)
-#
+def flatten_img_data(cifar10: Dataset):
+    """
+    Reshape the image data into rows
+    """
+    # get the number of image samples
+    num_train_img = cifar10.X_train.shape[0]
+    num_test_img = cifar10.X_test.shape[0]
+    # flatten image data into rows
+    # * newshape: The new shape should be compatible with the original shape.
+    # If an integer, then the result will be a 1-D array of that length.
+    # One shape dimension can be -1. In this case, the value is inferred
+    # from the length of the array and remaining dimensions.
+    cifar10.X_train = np.reshape(cifar10.X_train,
+                                 # flatten 4D array to 2D array, where
+                                 # first dimension = num_train_img (same as before)
+                                 # but the other dimension = infer from the rest of dimensions.
+                                 # in this case = 32 * 32 * 3 = 3072.
+                                 # (np.shape will infer this for you if you put in -1).
+                                 newshape=(num_train_img, -1))
+    cifar10.X_test = np.reshape(cifar10.X_test, newshape=(num_test_img, -1))
+
+
 # # Create a kNN classifier instance.
 # # Remember that training a kNN classifier is a noop:
 # # the Classifier simply remembers the data and does no further processing
@@ -283,6 +300,7 @@ def main():
     # visualise
     print("\n### {} ###".format(visualise_cifar10.__doc__.strip()))
     visualise_cifar10(cifar10)
+    print("check the plot view.")
     # subsample
     print("\n### {} ###".format(subsample_cifar10.__doc__.strip()))
     subsample_cifar10(cifar10)
@@ -290,7 +308,13 @@ def main():
     print(cifar10.X_train.shape)
     print('---Test data shape:')
     print(cifar10.X_test.shape)
-    print("\n### {} ###")
+    # flatten
+    print("\n### {} ###".format(flatten_img_data.__doc__.strip()))
+    flatten_img_data(cifar10)
+    print('---Training data shape:')
+    print(cifar10.X_train.shape)
+    print('---Test data shape:')
+    print(cifar10.X_test.shape)
 
 
 if __name__ == '__main__':
