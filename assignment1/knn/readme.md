@@ -15,7 +15,7 @@ In this exercise you will implement these steps and understand the basic Image C
 
 some examples of CIFAR10 dataset, with labels|
 ---|
-![](.readme_images/c53621f5.png)|
+![](.readme_images/5c597395.png)|
 
 We would now like to classify the test data with the kNN classifier. Recall that we can break down this process into two steps: 
 
@@ -68,10 +68,16 @@ $\color{blue}{\textit Your Explanation:}$
 
 ## Cross-validation
 
+[Setting hyperparameters with cross validation](https://youtu.be/OoUX-nOEjG0?t=2089)|
+---|
+![](.readme_images/77020a26.png)|
+
 We have implemented the k-Nearest Neighbor classifier 
 but we set the value k = 5 arbitrarily. We will now determine the best value of this hyperparameter with cross-validation.
 
-
+result of cross validation|
+---|
+![](.readme_images/32534b4f.png)|
 
 ## **Inline Question 3**
 
@@ -86,3 +92,6 @@ $\color{blue}{\textit Your Answer:}$
 
 
 $\color{blue}{\textit Your Explanation:}$
+
+## numpy examples
+### `np.array_split()` examples

@@ -86,8 +86,7 @@ class KNearestNeighbor(object):
                 # not use a loop over dimension, nor use np.linalg.norm().          #
                 #####################################################################
                 # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-                # write out the simple solution here (using np.linalg.norm())
-                # get the test & train img (1D vector)
+                # get the test & train img (1D array)
                 test_flat_img: np.ndarray = X[i]
                 train_flat_img: np.ndarray = self.X_train[j]
                 # check if they have the same shapes
@@ -95,8 +94,8 @@ class KNearestNeighbor(object):
                 # compute their L2 distance, only using matrix operations.
                 diff = test_flat_img - train_flat_img  # (D,) - (D,) -> (D,)
                 diff_square = np.square(diff)  # (D,) -> (D,)
-                diff_square_sum = np.sum(diff_square)  # (D,) -> (D,)
-                dists[i, j] = np.sqrt(diff_square_sum)  # (D,) -> (D,)
+                diff_square_sum = np.sum(diff_square)  # (D,) -> (1,)
+                dists[i, j] = np.sqrt(diff_square_sum)  # (1,) -> (1,)
                 # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
             else:
                 if i % 50 == 0:
@@ -126,7 +125,7 @@ class KNearestNeighbor(object):
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
             diff = self.X_train - X[i]  # (num_train, D) - (D,) -> (num_train, D). partial vectorisation.
             diff_square = np.square(diff)  # (num_train, D) -square-> (num_train, D).
-            # you could also do: diff_square = diff**2
+            # you could also do this by: diff_square = diff**2
             diff_square_sum = np.sum(diff_square, axis=1)  # (num_train, D) -sum-> (num_train, D). sum over rows.
             dists[i] = np.sqrt(diff_square_sum)  # (num_train, D) -sqrt-> (num_train, D)
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
@@ -142,10 +141,6 @@ class KNearestNeighbor(object):
 
         Input / Output: Same as compute_distances_two_loops
         """
-        # don't need thoe code below
-        # num_test = X.shape[0]
-        # num_train = self.X_train.shape[0]
-        # dists = np.zeros((num_test, num_train))
         #########################################################################
         # TODO:                                                                 #
         # Compute the l2 distance between all test points and all training      #
@@ -181,7 +176,6 @@ class KNearestNeighbor(object):
             + test_squares_sum  # (num_test, 1). broadcast addition to the first dim
             + train_squares_sum.T  # (1, num_train). broadcast addition to the second dim
         )
-
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
 
@@ -201,7 +195,6 @@ class KNearestNeighbor(object):
         num_test = dists.shape[0]
         y_pred = np.zeros(num_test)
         for i in range(num_test):
-
             #########################################################################
             # TODO:                                                                 #
             # Use the distance matrix to find the k nearest neighbors of the ith    #
@@ -216,10 +209,7 @@ class KNearestNeighbor(object):
             # get the indices for k-nearest neighbours
             knn_indices = nn_indices[:k]
             # get the labels for the nearest neighbours
-            # A list of length k storing the labels of the k nearest neighbors to
-            # the ith test point.
             knn_y = self.y_train[knn_indices]
-
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
             #########################################################################
             # TODO:                                                                 #
@@ -237,9 +227,4 @@ class KNearestNeighbor(object):
             majority = np.argmax(knn_y_bin_count)
             y_pred[i] = majority
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
         return y_pred
-
-
-if __name__ == '__main__':
-    pass
