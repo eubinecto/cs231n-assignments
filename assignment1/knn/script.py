@@ -13,6 +13,10 @@ CIFAR10_DIR = path.join(ROOT_DIR, "assignment1/cs231n/datasets/cifar-10-batches-
 # the 10 classes of CIFAR10 dataset.
 # the idx to each class is the value for y_train, y_test
 CLASSES = ['plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
+# the number of sub samples to use for this exercise
+# not using the entire dataset for efficient execution
+NUM_TRAIN = 5000
+NUM_TEST = 500
 
 
 @dataclass
@@ -36,10 +40,7 @@ def load_cifar10_as_dataset() -> Dataset:
 
 def visualise_cifar10(cifar10: Dataset):
     """
-     Visualize some examples from the dataset.
-     We show a few examples of training images from each class.
-    :param cifar10:
-    :return:
+    Visualize some examples from the dataset. We show a few examples of training images from each class.
     """
     global CLASSES
     num_classes = len(CLASSES)
@@ -49,6 +50,7 @@ def visualise_cifar10(cifar10: Dataset):
         # flatnonzero: "Return indices that are non-zero in the flattened version of a.
         # This is equivalent to np.nonzero(np.ravel(a))[0]."
         idxs = np.flatnonzero(cifar10.y_train == y)
+        # random selection without replacement
         idxs = np.random.choice(idxs, samples_per_class, replace=False)
         for i, idx in enumerate(idxs):
             plt_idx = i * num_classes + y + 1
@@ -58,18 +60,21 @@ def visualise_cifar10(cifar10: Dataset):
             if i == 0:
                 plt.title(cls)
     plt.show()
-#
-#
-# # Subsample the data for more efficient code execution in this exercise
-# num_training = 5000
-# mask = list(range(num_training))
-# X_train = X_train[mask]
-# y_train = y_train[mask]
-#
-# num_test = 500
-# mask = list(range(num_test))
-# X_test = X_test[mask]
-# y_test = y_test[mask]
+
+
+def subsample_cifar10(cifar10: Dataset):
+    """
+    Subsample the data for more efficient code execution in this exercise
+    """
+    global NUM_TRAIN, NUM_TEST
+    # range returns a range object, which is a generator, not an iterable.
+    # but it can be used for list slicing. (so no need for list conversion here)
+    cifar10.X_train = cifar10.X_train[range(NUM_TRAIN)]
+    cifar10.y_train = cifar10.y_train[range(NUM_TRAIN)]
+    cifar10.X_test = cifar10.X_test[range(NUM_TEST)]
+    cifar10.y_test = cifar10.y_test[range(NUM_TEST)]
+
+
 #
 # # Reshape the image data into rows
 # X_train = np.reshape(X_train, (X_train.shape[0], -1))
@@ -275,10 +280,17 @@ def main():
     print('---Test labels shape:')
     print(cifar10.y_test.shape)
     print("(num_test,)")
-
-    print("### Visualize some examples from the dataset."
-          " We show a few examples of training images from each class. ###")
+    # visualise
+    print("\n### {} ###".format(visualise_cifar10.__doc__.strip()))
     visualise_cifar10(cifar10)
+    # subsample
+    print("\n### {} ###".format(subsample_cifar10.__doc__.strip()))
+    subsample_cifar10(cifar10)
+    print('---Training data shape:')
+    print(cifar10.X_train.shape)
+    print('---Test data shape:')
+    print(cifar10.X_test.shape)
+    print("\n### {} ###")
 
 
 if __name__ == '__main__':
