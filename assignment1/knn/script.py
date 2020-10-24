@@ -10,6 +10,9 @@ from dataclasses import dataclass
 # the path to CIFAR10 data
 # make sure you've run get_datasets.sh script
 CIFAR10_DIR = path.join(ROOT_DIR, "assignment1/cs231n/datasets/cifar-10-batches-py")
+# the 10 classes of CIFAR10 dataset.
+# the idx to each class is the value for y_train, y_test
+CLASSES = ['plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
 
 
 @dataclass
@@ -31,23 +34,30 @@ def load_cifar10_as_dataset() -> Dataset:
     return Dataset(X_train, y_train, X_test, y_test)
 
 
-#
-# # Visualize some examples from the dataset.
-# # We show a few examples of training images from each class.
-# classes = ['plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
-# num_classes = len(classes)
-# samples_per_class = 7
-# for y, cls in enumerate(classes):
-#     idxs = np.flatnonzero(y_train == y)
-#     idxs = np.random.choice(idxs, samples_per_class, replace=False)
-#     for i, idx in enumerate(idxs):
-#         plt_idx = i * num_classes + y + 1
-#         plt.subplot(samples_per_class, num_classes, plt_idx)
-#         plt.imshow(X_train[idx].astype('uint8'))
-#         plt.axis('off')
-#         if i == 0:
-#             plt.title(cls)
-# plt.show()
+def visualise_cifar10(cifar10: Dataset):
+    """
+     Visualize some examples from the dataset.
+     We show a few examples of training images from each class.
+    :param cifar10:
+    :return:
+    """
+    global CLASSES
+    num_classes = len(CLASSES)
+    samples_per_class = 7
+    for y, cls in enumerate(CLASSES):
+        # boolean operator on matrices -> outputs either 0 or 1
+        # flatnonzero: "Return indices that are non-zero in the flattened version of a.
+        # This is equivalent to np.nonzero(np.ravel(a))[0]."
+        idxs = np.flatnonzero(cifar10.y_train == y)
+        idxs = np.random.choice(idxs, samples_per_class, replace=False)
+        for i, idx in enumerate(idxs):
+            plt_idx = i * num_classes + y + 1
+            plt.subplot(samples_per_class, num_classes, plt_idx)
+            plt.imshow(cifar10.X_train[idx].astype('uint8'))
+            plt.axis('off')
+            if i == 0:
+                plt.title(cls)
+    plt.show()
 #
 #
 # # Subsample the data for more efficient code execution in this exercise
@@ -249,7 +259,8 @@ def load_cifar10_as_dataset() -> Dataset:
 #
 # # -- inline question 3 -- #
 
-if __name__ == '__main__':
+
+def main():
     print("### As a sanity check, we print out the size of the training and test data. ###")
     cifar10 = load_cifar10_as_dataset()
     print('---Training data shape:')
@@ -264,4 +275,15 @@ if __name__ == '__main__':
     print('---Test labels shape:')
     print(cifar10.y_test.shape)
     print("(num_test,)")
+
+    print("### Visualize some examples from the dataset."
+          " We show a few examples of training images from each class. ###")
+    visualise_cifar10(cifar10)
+
+
+if __name__ == '__main__':
+    # doing it this way to avoid "shadows xyz from outer scope" error
+    # credit: https://stackoverflow.com/a/31575708
+    main()
+
 
