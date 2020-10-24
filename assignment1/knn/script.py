@@ -9,6 +9,7 @@ from dataclasses import dataclass
 # for de-denting
 # doc: https://docs.python.org/3/library/textwrap.html#textwrap.dedent
 import textwrap
+import pprint
 
 # the path to CIFAR10 data
 # make sure you've run get_datasets.sh script
@@ -108,21 +109,20 @@ def flatten_img_data(cifar10: Dataset):
     cifar10.X_test = np.reshape(cifar10.X_test, newshape=(num_test_img, -1))
 
 
-# # Create a kNN classifier instance.
-# # Remember that training a kNN classifier is a noop:
-# # the Classifier simply remembers the data and does no further processing
-# classifier = KNearestNeighbor()
-# classifier.train(X_train, y_train)
-#
-# # --- classification with KNN classifier --- #
-#
-#
-# # Open cs231n/classifiers/k_nearest_neighbor.py and implement
-# # compute_distances_two_loops.
-#
-# # Test your implementation:
-# dists = classifier.compute_distances_two_loops(X_test)
-# print(dists.shape)
+#  --- classification with KNN classifier --- #
+def create_and_train_knn_cls(cifar10: Dataset) -> KNearestNeighbor:
+    """
+    ===
+    Create a kNN classifier instance.
+    Remember that training a kNN classifier is a noop:
+    the Classifier simply remembers the data and does no further processing
+    ===
+    """
+
+    classifier = KNearestNeighbor()
+    classifier.train(X=cifar10.X_train, y=cifar10.y_train)
+    return classifier
+
 #
 #
 # # We can visualize the distance matrix: each row is a single test example and
@@ -293,6 +293,8 @@ def flatten_img_data(cifar10: Dataset):
 
 
 def main():
+    # for pretty printing objects
+    pp = pprint.PrettyPrinter(indent=4)
     print("======= preprocessing cifar10 dataset ========")
     print(textwrap.dedent(load_cifar10_as_dataset.__doc__))
     cifar10 = load_cifar10_as_dataset()
@@ -328,7 +330,25 @@ def main():
     print('---Test data shape:')
     print(cifar10.X_test.shape)
 
-    print("\n======== classifying cifar10 iamge with KNN classifier =========")
+    print("\n======== classifying cifar10 image with KNN classifier =========")
+    print(textwrap.dedent(create_and_train_knn_cls.__doc__))
+    knn_cls = create_and_train_knn_cls(cifar10)
+    print("no change to the training set:")
+    print(np.array_equal(knn_cls.X_train, cifar10.X_train))
+
+    print(textwrap.dedent(
+        """
+        ===
+        Open cs231n/classifiers/k_nearest_neighbor.py and implement
+        compute_distances_two_loops.
+        Test your implementation:
+        ===
+        """
+    ))
+    dists = knn_cls.compute_distances_two_loops(cifar10.X_test)
+    print("--- the shape of the dists matrix")
+    print(dists.shape)
+
 
 
 if __name__ == '__main__':

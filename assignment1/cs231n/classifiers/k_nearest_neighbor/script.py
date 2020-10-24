@@ -3,6 +3,10 @@ from builtins import object
 from typing import Optional
 
 import numpy as np
+import logging
+import sys
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+
 from past.builtins import xrange  # < -- what is xrange for?
 
 
@@ -11,8 +15,8 @@ class KNearestNeighbor(object):
 
     def __init__(self):
         # to be initialised.
-        self.X_train: Optional[np.array] = None
-        self.y_train: Optional[np.array] = None
+        self.X_train: Optional[np.ndarray] = None
+        self.y_train: Optional[np.ndarray] = None
 
     def train(self, X, y):
         """
@@ -54,22 +58,24 @@ class KNearestNeighbor(object):
 
         return self.predict_labels(dists, k=k)
 
-    def compute_distances_two_loops(self, X):
+    def compute_distances_two_loops(self, X: np.ndarray):
         """
         Compute the distance between each test point in X and each training point
         in self.X_train using a nested loop over both the training data and the
         test data.
 
         Inputs:
-        - X: A numpy array of shape (num_test, D) containing test data.
+        - X: A numpy array of shape (num_test, D) containing test data. (a flattened image data)
 
         Returns:
         - dists: A numpy array of shape (num_test, num_train) where dists[i, j]
           is the Euclidean distance between the ith test point and the jth training
           point.
         """
+        logger = logging.getLogger("compute_distances_two_loops")
         num_test = X.shape[0]
         num_train = self.X_train.shape[0]
+        # initialise the output as zero matrix.
         dists = np.zeros((num_test, num_train))
         for i in range(num_test):
             for j in range(num_train):
@@ -80,11 +86,24 @@ class KNearestNeighbor(object):
                 # not use a loop over dimension, nor use np.linalg.norm().          #
                 #####################################################################
                 # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-                # use pair-wise distance?
-                pass
-
+                # write out the simple solution here (using np.linalg.norm())
+                # get the test & train img (1D vector)
+                test_flat_img: np.ndarray = X[i]
+                train_flat_img: np.ndarray = self.X_train[j]
+                # check if they have the same shapes
+                assert test_flat_img.shape == train_flat_img.shape
+                # compute their L2 distance, only using matrix operations.
+                diff = test_flat_img - train_flat_img
+                diff_square = np.square(diff)
+                diff_square_sum = np.sum(diff_square)
+                dists[i, j] = np.sqrt(diff_square_sum)
                 # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-        return dists
+            else:
+                if i % 50 == 0:
+                    logger.info("computed dist for:[test={},to all {} train samples]"
+                                .format(i, num_train))
+        else:
+            return dists
 
     def compute_distances_one_loop(self, X):
         """
