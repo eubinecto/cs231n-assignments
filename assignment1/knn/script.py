@@ -6,7 +6,9 @@ from assignment1.cs231n.classifiers.k_nearest_neighbor.script import KNearestNei
 from config import ROOT_DIR
 from os import path
 from dataclasses import dataclass
-import copy
+# for de-denting
+# doc: https://docs.python.org/3/library/textwrap.html#textwrap.dedent
+import textwrap
 
 # the path to CIFAR10 data
 # make sure you've run get_datasets.sh script
@@ -30,8 +32,9 @@ class Dataset:
 
 def load_cifar10_as_dataset() -> Dataset:
     """
+    ===
     loads CIFAR_10 dataset from local
-    :return: a CIFAR10Dataset object
+    ===
     """
     # had to put the absolute path. how do I get the root directory?
     global CIFAR10_DIR
@@ -41,7 +44,10 @@ def load_cifar10_as_dataset() -> Dataset:
 
 def visualise_cifar10(cifar10: Dataset):
     """
-    Visualize some examples from the dataset. We show a few examples of training images from each class.
+    ===
+    Visualize some examples from the dataset.
+    We show a few examples of training images from each class.
+    ===
     """
     global CLASSES
     num_classes = len(CLASSES)
@@ -65,7 +71,9 @@ def visualise_cifar10(cifar10: Dataset):
 
 def subsample_cifar10(cifar10: Dataset):
     """
+    ===
     Subsample the data for more efficient code execution in this exercise
+    ===
     """
     global NUM_TRAIN, NUM_TEST
     # range returns a range object, which is a generator, not an iterable.
@@ -78,7 +86,9 @@ def subsample_cifar10(cifar10: Dataset):
 
 def flatten_img_data(cifar10: Dataset):
     """
+    ===
     Reshape the image data into rows
+    ===
     """
     # get the number of image samples
     num_train_img = cifar10.X_train.shape[0]
@@ -283,8 +293,10 @@ def flatten_img_data(cifar10: Dataset):
 
 
 def main():
-    print("### As a sanity check, we print out the size of the training and test data. ###")
+    print("======= preprocessing cifar10 dataset ========")
+    print(textwrap.dedent(load_cifar10_as_dataset.__doc__))
     cifar10 = load_cifar10_as_dataset()
+    print("As a sanity check, we print out the size of the training and test data.")
     print('---Training data shape:')
     print(cifar10.X_train.shape)
     print("(num_train, img_width, img_height, channel_size)")
@@ -298,23 +310,25 @@ def main():
     print(cifar10.y_test.shape)
     print("(num_test,)")
     # visualise
-    print("\n### {} ###".format(visualise_cifar10.__doc__.strip()))
+    print(textwrap.dedent(visualise_cifar10.__doc__))
     visualise_cifar10(cifar10)
     print("check the plot view.")
     # subsample
-    print("\n### {} ###".format(subsample_cifar10.__doc__.strip()))
+    print(textwrap.dedent(subsample_cifar10.__doc__))
     subsample_cifar10(cifar10)
     print('---Training data shape:')
     print(cifar10.X_train.shape)
     print('---Test data shape:')
     print(cifar10.X_test.shape)
     # flatten
-    print("\n### {} ###".format(flatten_img_data.__doc__.strip()))
+    print(textwrap.dedent(flatten_img_data.__doc__))
     flatten_img_data(cifar10)
     print('---Training data shape:')
     print(cifar10.X_train.shape)
     print('---Test data shape:')
     print(cifar10.X_test.shape)
+
+    print("\n======== classifying cifar10 iamge with KNN classifier =========")
 
 
 if __name__ == '__main__':
