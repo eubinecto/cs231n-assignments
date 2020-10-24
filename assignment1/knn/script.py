@@ -133,30 +133,28 @@ def visualise_dists(dists: np.ndarray):
     """
     plt.imshow(dists, interpolation='none')
     plt.show()
+
+# --- check inline question  1 --- #
+
+
+def predict_and_eval(knn_cls: KNearestNeighbor, cifar10: Dataset,
+                     dists: np.ndarray, k: int):
+    """
+    ===
+    Now implement the function predict_labels and run the code below,
+    which predicts the labels for all test examples and evaluates accuracy.
+    ===
+    """
+    y_test_pred = knn_cls.predict_labels(dists, k)
+    # Compute and print the fraction of correctly predicted examples
+    num_correct = np.sum(y_test_pred == cifar10.y_test)
+    num_test = cifar10.y_test.shape[0]
+    accuracy = float(num_correct) / num_test
+    print('Got {} / {} correct => accuracy: {}'
+          .format(num_correct, num_test, accuracy))
+
 #
-# # -- inline question  1 --- #
-#
-# # Now implement the function predict_labels and run the code below:
-# # We use k = 1 (which is Nearest Neighbor).
-# y_test_pred = classifier.predict_labels(dists, k=1)
-#
-# # Compute and print the fraction of correctly predicted examples
-# num_correct = np.sum(y_test_pred == y_test)
-# accuracy = float(num_correct) / num_test
-# print('Got %d / %d correct => accuracy: %f' % (num_correct, num_test, accuracy))
-#
-#
-# #  You should expect to see approximately `27%` accuracy. Now lets try out a larger `k`, say `k = 5`:
-#
-#
-# y_test_pred = classifier.predict_labels(dists, k=5)
-# num_correct = np.sum(y_test_pred == y_test)
-# accuracy = float(num_correct) / num_test
-# print('Got %d / %d correct => accuracy: %f' % (num_correct, num_test, accuracy))
-#
-# # You should expect to see a slightly better performance than with `k = 1`.
-#
-# # -- inline question 2 --- #
+#  -- inline question 2 --- #
 #
 #
 # # Now lets speed up distance matrix computation by using partial vectorization
@@ -355,6 +353,13 @@ def main():
     # visualise dists
     print(textwrap.dedent(visualise_dists.__doc__))
     visualise_dists(dists)
+    print("check the plot view")
+    # predict and eval
+    print(textwrap.dedent(predict_and_eval.__doc__))
+    print("---when k=1, you should expect to see approximately `27%` accuracy.")
+    predict_and_eval(knn_cls, cifar10, dists, k=1)
+    print("---Now lets try out a larger `k`, say `k = 5`. you should expect to see a slightly better performance")
+    predict_and_eval(knn_cls, cifar10, dists, k=5)
 
 
 if __name__ == '__main__':

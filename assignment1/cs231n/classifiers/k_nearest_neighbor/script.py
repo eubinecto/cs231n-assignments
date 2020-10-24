@@ -159,14 +159,14 @@ class KNearestNeighbor(object):
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
 
-    def predict_labels(self, dists, k=1):
+    def predict_labels(self, dists: np.ndarray, k=1):
         """
         Given a matrix of distances between test points and training points,
         predict a label for each test point.
 
         Inputs:
         - dists: A numpy array of shape (num_test, num_train) where dists[i, j]
-          gives the distance betwen the ith test point and the jth training point.
+          gives the distance between the ith test point and the jth training point.
 
         Returns:
         - y: A numpy array of shape (num_test,) containing predicted labels for the
@@ -177,17 +177,22 @@ class KNearestNeighbor(object):
         for i in range(num_test):
             # A list of length k storing the labels of the k nearest neighbors to
             # the ith test point.
-            closest_y = []
+            knn_y = ...
             #########################################################################
             # TODO:                                                                 #
             # Use the distance matrix to find the k nearest neighbors of the ith    #
             # testing point, and use self.y_train to find the labels of these       #
-            # neighbors. Store these labels in closest_y.                           #
+            # neighbors. Store these labels in knn_y.                           #
             # Hint: Look up the function numpy.argsort.                             #
             #########################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
-            pass
+            dists_to_all_train = dists[i]
+            # arg sort the distances in ascending order to get indices for nearest neighbours
+            nn_indices = np.argsort(dists_to_all_train)
+            # get the indices for k-nearest neighbours
+            knn_indices = nn_indices[:k]
+            # get the labels for the nearest neighbours
+            knn_y = self.y_train[knn_indices]
 
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
             #########################################################################
@@ -198,9 +203,13 @@ class KNearestNeighbor(object):
             # label.                                                                #
             #########################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
-            pass
-
+            # knn_y is a list of non-negative integers (ranging from 0-9),
+            # so we can use np.bincount() followed by np.argmax() to find the majority.
+            # argmax handles the ties by choosing the smaller label.
+            # credit: https://stackoverflow.com/a/6252400
+            knn_y_bin_count = np.bincount(knn_y)
+            majority = np.argmax(knn_y_bin_count)
+            y_pred[i] = majority
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
         return y_pred
