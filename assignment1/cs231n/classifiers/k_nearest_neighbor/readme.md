@@ -52,3 +52,63 @@ For its limits as explained above, KNN is almost never used for image classifica
 (though it's a good starting point to learn data-driven algorithms, hyper paramter tuning, etc for its simplicity).
 
  -> link to linear classifier, svm, neural network, etc.
+
+
+## Some examples for `numpy` operations
+
+### `np.bincount()`
+... fill this in later.
+
+### partial vectorisation - an example
+```
+A = np.asarray([1])
+B = np.asarray([1, 2])
+A - B
+array([ 0, -1])
+B - A
+array([0, 1])
+```
+
+### `np.sum()` on matrix - how to use `axis` parameter
+```
+mat
+array([[1, 2],
+       [3, 4]])
+np.sum(mat)
+10
+np.sum(mat, axis=0)
+array([4, 6])
+np.sum(mat, axis=1)
+array([3, 7])
+```
+
+
+###  broadcast sums
+
+```
+m1 = np.array([[1,2], [1,2], [1,2]])
+m2 = np.array([[1], [1], [1]])
+m1
+array([[1, 2],
+       [1, 2],
+       [1, 2]])
+m2
+array([[1],
+       [1],
+       [1]])
+m1 + m2
+array([[2, 3],
+       [2, 3],
+       [2, 3]])
+m2.shape
+(3, 1)
+m3 = np.array([[1, 2]])
+m3
+array([[1, 2]])
+m1 + m3
+array([[2, 4],
+       [2, 4],
+       [2, 4]])
+```
+
+### what is `xrange` used for?

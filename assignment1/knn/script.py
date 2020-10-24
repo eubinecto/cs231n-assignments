@@ -21,6 +21,8 @@ CLASSES = ['plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship'
 # not using the entire dataset for efficient execution (remember, prediction with KNN runs in O(n) time)
 NUM_TRAIN = 5000
 NUM_TEST = 500
+NUM_FOLDS = 5
+K_CHOICES = [1, 3, 5, 8, 10, 12, 15, 20, 50, 100]
 
 
 @dataclass
@@ -153,72 +155,41 @@ def predict_and_eval(knn_cls: KNearestNeighbor, cifar10: Dataset,
     print('Got {} / {} correct => accuracy: {}'
           .format(num_correct, num_test, accuracy))
 
+
+#  --- check inline question 2 --- #
+
+def frobenius_compare(mat1: np.ndarray, mat2: np.ndarray):
+    """
+    ===
+    To ensure that our vectorized implementation is correct, we make sure that it
+    agrees with the naive implementation. There are many ways to decide whether
+    two matrices are similar; one of the simplest is the Frobenius norm. In case
+    you haven't seen it before, the Frobenius norm of two matrices is the square
+    root of the squared sum of differences of all elements; in other words, reshape
+    the matrices into vectors and compute the Euclidean distance between them.
+    ===
+    """
+    difference = np.linalg.norm(mat1 - mat2, ord='fro')
+    print('One loop difference was: %f' % (difference, ))
+    if difference < 0.001:
+        print('Good! The distance matrices are the same')
+    else:
+        print('Uh-oh! The distance matrices are different')
+
+
+def time_function(f, *args):
+    """
+    Call a function f with args and return the time (in seconds) that it took to execute.
+    """
+    import time
+    tic = time.time()
+    f(*args)
+    toc = time.time()
+    return toc - tic
+
+
+#  -- cross validation -- #
 #
-#  -- inline question 2 --- #
-#
-#
-# # Now lets speed up distance matrix computation by using partial vectorization
-# # with one loop. Implement the function compute_distances_one_loop and run the
-# # code below:
-# dists_one = classifier.compute_distances_one_loop(X_test)
-#
-# # To ensure that our vectorized implementation is correct, we make sure that it
-# # agrees with the naive implementation. There are many ways to decide whether
-# # two matrices are similar; one of the simplest is the Frobenius norm. In case
-# # you haven't seen it before, the Frobenius norm of two matrices is the square
-# # root of the squared sum of differences of all elements; in other words, reshape
-# # the matrices into vectors and compute the Euclidean distance between them.
-# difference = np.linalg.norm(dists - dists_one, ord='fro')
-# print('One loop difference was: %f' % (difference, ))
-# if difference < 0.001:
-#     print('Good! The distance matrices are the same')
-# else:
-#     print('Uh-oh! The distance matrices are different')
-#
-#
-# # Now implement the fully vectorized version inside compute_distances_no_loops
-# # and run the code
-# dists_two = classifier.compute_distances_no_loops(X_test)
-#
-# # check that the distance matrix agrees with the one we computed before:
-# difference = np.linalg.norm(dists - dists_two, ord='fro')
-# print('No loop difference was: %f' % (difference, ))
-# if difference < 0.001:
-#     print('Good! The distance matrices are the same')
-# else:
-#     print('Uh-oh! The distance matrices are different')
-#
-#
-# # Let's compare how fast the implementations are
-# def time_function(f, *args):
-#     """
-#     Call a function f with args and return the time (in seconds) that it took to execute.
-#     """
-#     import time
-#     tic = time.time()
-#     f(*args)
-#     toc = time.time()
-#     return toc - tic
-#
-# two_loop_time = time_function(classifier.compute_distances_two_loops, X_test)
-# print('Two loop version took %f seconds' % two_loop_time)
-#
-# one_loop_time = time_function(classifier.compute_distances_one_loop, X_test)
-# print('One loop version took %f seconds' % one_loop_time)
-#
-# no_loop_time = time_function(classifier.compute_distances_no_loops, X_test)
-# print('No loop version took %f seconds' % no_loop_time)
-#
-# # You should see significantly faster performance with the fully vectorized implementation!
-#
-# # NOTE: depending on what machine you're using,
-# # you might not see a speedup when you go from two loops to one loop,
-# # and might even see a slow-down.
-#
-# # -- cross validation -- #
-#
-# num_folds = 5
-# k_choices = [1, 3, 5, 8, 10, 12, 15, 20, 50, 100]
 #
 # X_train_folds = []
 # y_train_folds = []
@@ -360,10 +331,56 @@ def main():
     predict_and_eval(knn_cls, cifar10, dists, k=1)
     print("---Now lets try out a larger `k`, say `k = 5`. you should expect to see a slightly better performance")
     predict_and_eval(knn_cls, cifar10, dists, k=5)
+    # compute dists again
+    print(textwrap.dedent(
+        """
+        ===
+        Now lets speed up distance matrix computation by using partial vectorization
+        with one loop. Implement the function compute_distances_one_loop and run the
+        code below:
+        ===
+        """
+    ))
+    dists_one = knn_cls.compute_distances_one_loop(cifar10.X_test)
+    print(textwrap.dedent(frobenius_compare.__doc__))
+    frobenius_compare(dists, dists_one)
+
+    print(textwrap.dedent(
+        """
+        ===
+        Now lets speed up distance matrix computation by using complete vectorization
+        with no loops. Implement the function compute_distances_no_loop and run the
+        code below:
+        ===
+        """
+    ))
+    dists_no = knn_cls.compute_distances_no_loops(cifar10.X_test)
+    print(textwrap.dedent(frobenius_compare.__doc__))
+    frobenius_compare(dists, dists_no)
+
+    print(textwrap.dedent(
+        """
+        ===
+        Running time comparison of the three algorithms for computing L2 dist.
+        You should see significantly faster performance with the fully vectorized implementation!
+        NOTE: depending on what machine you're using,
+        you might not see a speedup when you go from two loops to one loop,
+        and might even see a slow-down.
+        ===
+        """
+    ))
+    two_loop_time = time_function(knn_cls.compute_distances_two_loops,cifar10.X_test)
+    print('Two loop version took %f seconds' % two_loop_time)
+
+    one_loop_time = time_function(knn_cls.compute_distances_one_loop, cifar10.X_test)
+    print('One loop version took %f seconds' % one_loop_time)
+
+    no_loop_time = time_function(knn_cls.compute_distances_no_loops, cifar10.X_test)
+    print('No loop version took %f seconds' % no_loop_time)
 
 
 if __name__ == '__main__':
-    # doing it this way to avoid "shadows xyz from outer scope" error
+    # doing it this way to avoid "shadows xyz from outer scope" warning
     # credit: https://stackoverflow.com/a/31575708
     main()
 

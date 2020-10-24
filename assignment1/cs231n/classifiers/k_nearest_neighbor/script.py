@@ -7,7 +7,7 @@ import logging
 import sys
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
-from past.builtins import xrange  # < -- what is xrange for?
+# from past.builtins import xrange  # < -- what is xrange for?
 
 
 class KNearestNeighbor(object):
@@ -63,7 +63,7 @@ class KNearestNeighbor(object):
         Compute the distance between each test point in X and each training point
         in self.X_train using a nested loop over both the training data and the
         test data.
-
+        runs in O(num_test * num_train) time.
         Inputs:
         - X: A numpy array of shape (num_test, D) containing test data. (a flattened image data)
 
@@ -93,10 +93,10 @@ class KNearestNeighbor(object):
                 # check if they have the same shapes
                 assert test_flat_img.shape == train_flat_img.shape
                 # compute their L2 distance, only using matrix operations.
-                diff = test_flat_img - train_flat_img
-                diff_square = np.square(diff)
-                diff_square_sum = np.sum(diff_square)
-                dists[i, j] = np.sqrt(diff_square_sum)
+                diff = test_flat_img - train_flat_img  # (D,) - (D,) -> (D,)
+                diff_square = np.square(diff)  # (D,) -> (D,)
+                diff_square_sum = np.sum(diff_square)  # (D,) -> (D,)
+                dists[i, j] = np.sqrt(diff_square_sum)  # (D,) -> (D,)
                 # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
             else:
                 if i % 50 == 0:
@@ -105,13 +105,14 @@ class KNearestNeighbor(object):
         else:
             return dists
 
-    def compute_distances_one_loop(self, X):
+    def compute_distances_one_loop(self, X: np.ndarray):
         """
         Compute the distance between each test point in X and each training point
         in self.X_train using a single loop over the test data.
 
         Input / Output: Same as compute_distances_two_loops
         """
+        logger = logging.getLogger("compute_distances_one_loop")
         num_test = X.shape[0]
         num_train = self.X_train.shape[0]
         dists = np.zeros((num_test, num_train))
@@ -123,10 +124,15 @@ class KNearestNeighbor(object):
             # Do not use np.linalg.norm().                                        #
             #######################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
-            pass
-
+            diff = self.X_train - X[i]  # (num_train, D) - (D,) -> (num_train, D). partial vectorisation.
+            diff_square = np.square(diff)  # (num_train, D) -square-> (num_train, D).
+            # you could also do: diff_square = diff**2
+            diff_square_sum = np.sum(diff_square, axis=1)  # (num_train, D) -sum-> (num_train, D). sum over rows.
+            dists[i] = np.sqrt(diff_square_sum)  # (num_train, D) -sqrt-> (num_train, D)
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+            if i % 50 == 0:
+                logger.info("computed dist for:[test={},to all {} train samples]"
+                            .format(i, num_train))
         return dists
 
     def compute_distances_no_loops(self, X):
@@ -136,9 +142,10 @@ class KNearestNeighbor(object):
 
         Input / Output: Same as compute_distances_two_loops
         """
-        num_test = X.shape[0]
-        num_train = self.X_train.shape[0]
-        dists = np.zeros((num_test, num_train))
+        # don't need thoe code below
+        # num_test = X.shape[0]
+        # num_train = self.X_train.shape[0]
+        # dists = np.zeros((num_test, num_train))
         #########################################################################
         # TODO:                                                                 #
         # Compute the l2 distance between all test points and all training      #
@@ -153,8 +160,27 @@ class KNearestNeighbor(object):
         #       and two broadcast sums.                                         #
         #########################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
-        pass
+        # here, what this question alludes us is to compute L2 analytically.
+        # let x = [x1, x2], y = [y1, y2], then
+        # L2(x, y) = sqrt((x1 -y1)^2 + (x2 - y2)^2)
+        # = sqrt(x1^2 - 2x1 * y1 + y1^2 + x2^2 - 2x2 * y2 + y2^2)
+        # = sqrt(-2(x1 * y1 + x2 * y2) + (x1^2 + x2^2) + (y1^2 + y2^2))
+        # = sqrt(-2(x dot y) + sum(square(x)) + sum(square(y)).
+        dot_products = X @ self.X_train.T  # (num_test, D) @ (D, num_train) -> (num_test, num_train)
+        test_squares = np.square(X)  # (num_test, D) -> (num_test, D)
+        train_squares = np.square(self.X_train)   # (num_train, D) -> (num_train, D)
+        test_squares_sum = np.sum(test_squares,
+                                  # sum over rows
+                                  axis=1,
+                                  # keep the second dimension as 1
+                                  keepdims=True)  # (num_test, D) -> (num_test, 1)
+        train_squares_sum = np.sum(train_squares,
+                                   axis=1, keepdims=True)  # (num_train, D) -> -> (num_train, 1) (sum over rows)
+        dists = np.sqrt(
+            -2 * dot_products  # (num_test, num_train)
+            + test_squares_sum  # (num_test, 1). broadcast addition to the first dim
+            + train_squares_sum.T  # (1, num_train). broadcast addition to the second dim
+        )
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
@@ -175,9 +201,7 @@ class KNearestNeighbor(object):
         num_test = dists.shape[0]
         y_pred = np.zeros(num_test)
         for i in range(num_test):
-            # A list of length k storing the labels of the k nearest neighbors to
-            # the ith test point.
-            knn_y = ...
+
             #########################################################################
             # TODO:                                                                 #
             # Use the distance matrix to find the k nearest neighbors of the ith    #
@@ -192,6 +216,8 @@ class KNearestNeighbor(object):
             # get the indices for k-nearest neighbours
             knn_indices = nn_indices[:k]
             # get the labels for the nearest neighbours
+            # A list of length k storing the labels of the k nearest neighbors to
+            # the ith test point.
             knn_y = self.y_train[knn_indices]
 
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
