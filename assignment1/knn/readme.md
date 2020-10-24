@@ -35,12 +35,19 @@ visualisation of L2 `dists` between `X` and `X_train`|
 ---|
 ![](.readme_images/69d29e89.png)|
 
-Notice the structured patterns in the distance matrix, where some rows or columns are visible brighter. (Note that with the default color scheme black indicates low distances while white indicates high distances.)
+Notice the structured patterns in the distance matrix, where some rows or columns are visible brighter.
+ (Note that with the default color scheme black indicates low distances while white indicates high distances.)
 
 - What in the data is the cause behind the distinctly bright rows?
-- What causes the columns?
 
-$\color{blue}{\textit Your Answer:}$ *fill this in.*
+> Some images in the test set that have higher RGB values than most of the images in the training set 
+> is the cause of the distinctively bright rows. -> implications? novel test data?
+
+- What causes the columns?
+> Vice versa; Some images in the training\ set that have higher RGB values than most of the images in the test set 
+> is the cause of the distinctively bright rows. -> implications??
+                  
+
 
 
 ## **Inline Question 2**
@@ -55,15 +62,33 @@ The general standard deviation $\sigma$ and pixel-wise standard deviation $\sigm
 
 Which of the following preprocessing steps will not change the performance of a Nearest Neighbor classifier that uses L1 distance? Select all that apply.
 1. Subtracting the mean $\mu$ ($\tilde{p}_{ij}^{(k)}=p_{ij}^{(k)}-\mu$.)
+
+> L1 distannce won't change, so the performance won't change.
+
+mathematical expl|
+--- |
+![](.readme_images/8d3dcdb9.png)|
+
 2. Subtracting the per pixel mean $\mu_{ij}$  ($\tilde{p}_{ij}^{(k)}=p_{ij}^{(k)}-\mu_{ij}$.)
+
 3. Subtracting the mean $\mu$ and dividing by the standard deviation $\sigma$.
+> L1 distance will change?
+
+mathematical expl|
+--- |
+![](.readme_images/0841e934.png)| 
+
 4. Subtracting the pixel-wise mean $\mu_{ij}$ and dividing by the pixel-wise standard deviation $\sigma_{ij}$.
 5. Rotating the coordinate axes of the data.
+> L1 distance will change.
 
-$\color{blue}{\textit Your Answer:}$
+mathematical expl|
+--- |
+![](.readme_images/1fe5a2d6.png)|
 
 
-$\color{blue}{\textit Your Explanation:}$
+
+- reference: https://github.com/jariasf/CS231n/blob/master/assignment1/knn.ipynb
 
 
 ## Cross-validation
@@ -81,17 +106,30 @@ result of cross validation|
 
 ## **Inline Question 3**
 
-Which of the following statements about $k$-Nearest Neighbor ($k$-NN) are true in a classification setting, and for all $k$? Select all that apply.
+Which of the following statements about $k$-Nearest Neighbor ($k$-NN) are true in a classification setting,
+ and for all $k$? Select all that apply.
+ 
+>  True: 2, 4. False: 1, 3
+ 
 1. The decision boundary of the k-NN classifier is linear.
+> this is not true. (How could I explain this mathematically?)
+
+
 2. The training error of a 1-NN will always be lower than that of 5-NN.
+> this is true, because the prediction output of 1-NN for an example is the label of the the example itself, which is
+> the answer for the given example. Making predictions with 1-NN on training set will always output a correct answer.
+
+
 3. The test error of a 1-NN will always be lower than that of a 5-NN.
+> This is not necessarily true. Counter example: if, for a particular testing example, 5-nearest-neighbours to
+> the test sample were found to be: `[correct, incorrect1, incorrect2, incorrect3, incorrect4]`,
+> then 5-NN would output an incorrect answer, whereas 1-NN would output a correct answer for the same testing example.
+
 4. The time needed to classify a test example with the k-NN classifier grows with the size of the training set.
-5. None of the above.
+> This is true. Although we can reduce the time it takes for `prefict` by parallel execution using vectorization technique,
+> the number of distances to compute is `num_test` * `num_train`, which invariably grows with the size of test set and 
+> train set.
 
-$\color{blue}{\textit Your Answer:}$
-
-
-$\color{blue}{\textit Your Explanation:}$
 
 ## numpy examples
 ### `np.array_split()` examples

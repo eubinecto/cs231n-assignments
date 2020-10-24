@@ -1,0 +1,627 @@
+======= preprocessing cifar10 dataset ========
+
+#######################################
+load CIFAR_10 dataset from local.
+#######################################
+
+As a sanity check, we print out the size of the training and test data.
+---Training data shape:
+(50000, 32, 32, 3)
+(num_train, img_width, img_height, channel_size)
+---Training labels shape:
+(50000,)
+(num_train,)
+---Test data shape:
+(10000, 32, 32, 3)
+(num_test, img_width, img_height, channel_size)
+---Test labels shape:
+(10000,)
+(num_test,)
+
+#######################################
+Visualize some examples from the dataset.
+We show a few examples of training images from each class.
+#######################################
+
+check the plot view.
+
+#######################################
+Subsample the data for more efficient code execution in this exercise
+#######################################
+
+---Training data shape:
+(5000, 32, 32, 3)
+---Test data shape:
+(500, 32, 32, 3)
+
+#######################################
+Reshape the image data into rows
+#######################################
+
+---Training data shape:
+(5000, 3072)
+---Test data shape:
+(500, 3072)
+
+======== classifying cifar10 image with KNN classifier =========
+
+#######################################
+Create a kNN classifier instance.
+Remember that training a kNN classifier is a noop:
+the Classifier simply remembers the data and does no further processing
+#######################################
+
+no change to the training set:
+True
+
+#######################################
+Open cs231n/classifiers/k_nearest_neighbor.py and implement
+compute_distances_two_loops.
+Test your implementation:
+#######################################
+
+INFO:compute_distances_two_loops:computed dist for:[test=0,to all 5000 train samples]
+INFO:compute_distances_two_loops:computed dist for:[test=50,to all 5000 train samples]
+INFO:compute_distances_two_loops:computed dist for:[test=100,to all 5000 train samples]
+INFO:compute_distances_two_loops:computed dist for:[test=150,to all 5000 train samples]
+INFO:compute_distances_two_loops:computed dist for:[test=200,to all 5000 train samples]
+INFO:compute_distances_two_loops:computed dist for:[test=250,to all 5000 train samples]
+INFO:compute_distances_two_loops:computed dist for:[test=300,to all 5000 train samples]
+INFO:compute_distances_two_loops:computed dist for:[test=350,to all 5000 train samples]
+INFO:compute_distances_two_loops:computed dist for:[test=400,to all 5000 train samples]
+INFO:compute_distances_two_loops:computed dist for:[test=450,to all 5000 train samples]
+--- the shape of the dists matrix
+(500, 5000)
+
+#######################################
+We can visualize the distance matrix: each row is a single test example and
+its distances to training examples
+#######################################
+
+check the plot view
+
+#######################################
+Now implement the function predict_labels and run the code below,
+which predicts the labels for all test examples and evaluates accuracy.
+#######################################
+
+---when k=1, you should expect to see approximately `27%` accuracy.
+Got 137 / 500 correct => accuracy: 0.274
+---Now lets try out a larger `k`, say `k = 5`. you should expect to see a slightly better performance
+Got 139 / 500 correct => accuracy: 0.278
+
+#######################################
+Now lets speed up distance matrix computation by using partial vectorization
+with one loop. Implement the function compute_distances_one_loop and run the
+code below:
+#######################################
+
+INFO:compute_distances_one_loop:computed dist for:[test=0,to all 5000 train samples]
+INFO:compute_distances_one_loop:computed dist for:[test=50,to all 5000 train samples]
+INFO:compute_distances_one_loop:computed dist for:[test=100,to all 5000 train samples]
+INFO:compute_distances_one_loop:computed dist for:[test=150,to all 5000 train samples]
+INFO:compute_distances_one_loop:computed dist for:[test=200,to all 5000 train samples]
+INFO:compute_distances_one_loop:computed dist for:[test=250,to all 5000 train samples]
+INFO:compute_distances_one_loop:computed dist for:[test=300,to all 5000 train samples]
+INFO:compute_distances_one_loop:computed dist for:[test=350,to all 5000 train samples]
+INFO:compute_distances_one_loop:computed dist for:[test=400,to all 5000 train samples]
+INFO:compute_distances_one_loop:computed dist for:[test=450,to all 5000 train samples]
+
+################################################################################
+To ensure that our vectorized implementation is correct, we make sure that it
+agrees with the naive implementation. There are many ways to decide whether
+two matrices are similar; one of the simplest is the Frobenius norm. In case
+you haven't seen it before, the Frobenius norm of two matrices is the square
+root of the squared sum of differences of all elements; in other words, reshape
+the matrices into vectors and compute the Euclidean distance between them.
+################################################################################
+
+One loop difference was: 0.000000
+Good! The distance matrices are the same
+
+#######################################
+Now lets speed up distance matrix computation by using complete vectorization
+with no loops. Implement the function compute_distances_no_loop and run the
+code below:
+#######################################
+
+
+################################################################################
+To ensure that our vectorized implementation is correct, we make sure that it
+agrees with the naive implementation. There are many ways to decide whether
+two matrices are similar; one of the simplest is the Frobenius norm. In case
+you haven't seen it before, the Frobenius norm of two matrices is the square
+root of the squared sum of differences of all elements; in other words, reshape
+the matrices into vectors and compute the Euclidean distance between them.
+################################################################################
+
+One loop difference was: 0.000000
+Good! The distance matrices are the same
+
+#######################################
+Running time comparison of the three algorithms for computing L2 dist.
+You should see significantly faster performance with the fully vectorized implementation!
+NOTE: depending on what machine you're using,
+you might not see a speedup when you go from two loops to one loop,
+and might even see a slow-down.
+#######################################
+
+INFO:compute_distances_two_loops:computed dist for:[test=0,to all 5000 train samples]
+INFO:compute_distances_two_loops:computed dist for:[test=50,to all 5000 train samples]
+INFO:compute_distances_two_loops:computed dist for:[test=100,to all 5000 train samples]
+INFO:compute_distances_two_loops:computed dist for:[test=150,to all 5000 train samples]
+INFO:compute_distances_two_loops:computed dist for:[test=200,to all 5000 train samples]
+INFO:compute_distances_two_loops:computed dist for:[test=250,to all 5000 train samples]
+INFO:compute_distances_two_loops:computed dist for:[test=300,to all 5000 train samples]
+INFO:compute_distances_two_loops:computed dist for:[test=350,to all 5000 train samples]
+INFO:compute_distances_two_loops:computed dist for:[test=400,to all 5000 train samples]
+INFO:compute_distances_two_loops:computed dist for:[test=450,to all 5000 train samples]
+Two loop version took 34.653652 seconds
+INFO:compute_distances_one_loop:computed dist for:[test=0,to all 5000 train samples]
+INFO:compute_distances_one_loop:computed dist for:[test=50,to all 5000 train samples]
+INFO:compute_distances_one_loop:computed dist for:[test=100,to all 5000 train samples]
+INFO:compute_distances_one_loop:computed dist for:[test=150,to all 5000 train samples]
+INFO:compute_distances_one_loop:computed dist for:[test=200,to all 5000 train samples]
+INFO:compute_distances_one_loop:computed dist for:[test=250,to all 5000 train samples]
+INFO:compute_distances_one_loop:computed dist for:[test=300,to all 5000 train samples]
+INFO:compute_distances_one_loop:computed dist for:[test=350,to all 5000 train samples]
+INFO:compute_distances_one_loop:computed dist for:[test=400,to all 5000 train samples]
+INFO:compute_distances_one_loop:computed dist for:[test=450,to all 5000 train samples]
+One loop version took 32.517695 seconds
+No loop version took 0.237940 seconds
+
+################################################################################
+# TODO:                                                                        #
+# Split up the training data into folds. After splitting, X_train_folds and    #
+# y_train_folds should each be lists of length num_folds, where                #
+# y_train_folds[i] is the label vector for the points in X_train_folds[i].     #
+# Hint: Look up the numpy array_split function.                                #
+################################################################################
+
+X_train folds: [array([[ 59.,  62.,  63., ..., 123.,  92.,  72.],
+       [154., 177., 187., ..., 143., 133., 144.],
+       [255., 255., 255., ...,  80.,  86.,  84.],
+       ...,
+       [145., 148., 157., ..., 126., 160.,  91.],
+       [146., 146., 146., ..., 238., 238., 238.],
+       [203., 206., 208., ..., 132., 131., 126.]]), array([[242., 243., 250., ..., 105., 123., 135.],
+       [ 56.,  50.,  28., ..., 131., 112.,  86.],
+       [100.,  86.,  89., ...,  44.,  49.,  48.],
+       ...,
+       [ 41.,  47.,  35., ..., 161., 149.,  89.],
+       [ 66., 101., 131., ..., 171., 176., 186.],
+       [124., 190., 225., ..., 138., 145., 110.]]), array([[255., 255., 247., ...,  53.,  52.,  45.],
+       [119., 103.,  92., ...,  95., 113., 126.],
+       [255., 255., 255., ..., 159., 160., 164.],
+       ...,
+       [ 29.,  32.,  32., ..., 212., 215., 207.],
+       [171., 151., 119., ..., 166., 147., 117.],
+       [213., 219., 244., ...,  52.,  54.,  44.]]), array([[254., 254., 254., ..., 217., 215., 213.],
+       [175., 247., 159., ..., 110., 110., 136.],
+       [ 91.,  67.,  69., ...,   5.,   2.,   3.],
+       ...,
+       [164., 150., 127., ..., 161., 138., 103.],
+       [228., 236., 240., ...,  92., 105., 113.],
+       [ 90., 109.,  89., ...,  83., 153.,  57.]]), array([[ 86., 138., 179., ...,  75., 123., 163.],
+       [158., 156., 178., ...,  61.,  65.,  66.],
+       [185., 190., 180., ..., 144., 113.,  74.],
+       ...,
+       [167., 163., 145., ...,  42.,  78.,  84.],
+       [154., 152., 125., ..., 194., 247., 114.],
+       [ 45.,  32.,  21., ..., 156., 142., 100.]])]
+y_train_folds: [array([6, 9, 9, 4, 1, 1, 2, 7, 8, 3, 4, 7, 7, 2, 9, 9, 9, 3, 2, 6, 4, 3,
+       6, 6, 2, 6, 3, 5, 4, 0, 0, 9, 1, 3, 4, 0, 3, 7, 3, 3, 5, 2, 2, 7,
+       1, 1, 1, 2, 2, 0, 9, 5, 7, 9, 2, 2, 5, 2, 4, 3, 1, 1, 8, 2, 1, 1,
+       4, 9, 7, 8, 5, 9, 6, 7, 3, 1, 9, 0, 3, 1, 3, 5, 4, 5, 7, 7, 4, 7,
+       9, 4, 2, 3, 8, 0, 1, 6, 1, 1, 4, 1, 8, 3, 9, 6, 6, 1, 8, 5, 2, 9,
+       9, 8, 1, 7, 7, 0, 0, 6, 9, 1, 2, 2, 9, 2, 6, 6, 1, 9, 5, 0, 4, 7,
+       6, 7, 1, 8, 1, 1, 2, 8, 1, 3, 3, 6, 2, 4, 9, 9, 5, 4, 3, 6, 7, 4,
+       6, 8, 5, 5, 4, 3, 1, 8, 4, 7, 6, 0, 9, 5, 1, 3, 8, 2, 7, 5, 3, 4,
+       1, 5, 7, 0, 4, 7, 5, 5, 1, 0, 9, 6, 9, 0, 8, 7, 8, 8, 2, 5, 2, 3,
+       5, 0, 6, 1, 9, 3, 6, 9, 1, 3, 9, 6, 6, 7, 1, 0, 9, 5, 8, 5, 2, 9,
+       0, 8, 8, 0, 6, 9, 1, 1, 6, 3, 7, 6, 6, 0, 6, 6, 1, 7, 1, 5, 8, 3,
+       6, 6, 8, 6, 8, 4, 6, 6, 1, 3, 8, 3, 4, 1, 7, 1, 3, 8, 5, 1, 1, 4,
+       0, 9, 3, 7, 4, 9, 9, 2, 4, 9, 9, 1, 0, 5, 9, 0, 8, 2, 1, 2, 0, 5,
+       6, 3, 2, 7, 8, 8, 6, 0, 7, 9, 4, 5, 6, 4, 2, 1, 1, 2, 1, 5, 9, 9,
+       0, 8, 4, 1, 1, 6, 3, 3, 9, 0, 7, 9, 7, 7, 9, 1, 5, 1, 6, 6, 8, 7,
+       1, 3, 0, 3, 3, 2, 4, 5, 7, 5, 9, 0, 3, 4, 0, 4, 4, 6, 0, 0, 6, 6,
+       0, 8, 1, 6, 2, 9, 2, 5, 9, 6, 7, 4, 1, 8, 7, 3, 6, 9, 3, 0, 4, 0,
+       5, 1, 0, 3, 4, 8, 5, 4, 7, 2, 3, 9, 7, 6, 7, 1, 4, 7, 0, 1, 7, 3,
+       1, 8, 4, 4, 2, 0, 2, 2, 0, 0, 9, 0, 9, 6, 8, 2, 7, 7, 4, 0, 3, 0,
+       8, 9, 4, 2, 7, 2, 5, 2, 5, 1, 9, 4, 8, 5, 1, 7, 4, 4, 0, 6, 9, 0,
+       7, 8, 8, 9, 9, 3, 3, 4, 0, 4, 5, 6, 6, 0, 1, 0, 8, 0, 4, 8, 8, 1,
+       5, 2, 6, 8, 1, 0, 0, 7, 7, 5, 9, 6, 2, 8, 3, 4, 7, 3, 9, 0, 1, 2,
+       4, 8, 1, 8, 6, 4, 4, 5, 7, 1, 3, 9, 8, 0, 1, 7, 5, 8, 2, 8, 0, 4,
+       1, 8, 9, 8, 2, 9, 9, 2, 7, 5, 7, 3, 8, 8, 4, 4, 2, 7, 1, 6, 4, 0,
+       4, 6, 9, 7, 6, 2, 5, 5, 1, 7, 2, 2, 2, 9, 5, 4, 2, 7, 8, 1, 3, 4,
+       3, 7, 6, 9, 8, 0, 6, 0, 2, 2, 2, 1, 8, 4, 0, 1, 8, 8, 1, 5, 7, 6,
+       4, 5, 8, 7, 1, 9, 1, 9, 8, 4, 7, 3, 8, 8, 2, 6, 6, 7, 1, 6, 8, 1,
+       9, 7, 8, 3, 0, 1, 0, 8, 8, 3, 0, 0, 1, 5, 0, 8, 8, 7, 9, 9, 0, 9,
+       4, 1, 3, 6, 6, 4, 4, 7, 5, 6, 0, 8, 0, 3, 2, 8, 4, 6, 9, 9, 7, 0,
+       3, 3, 6, 7, 4, 9, 1, 6, 2, 7, 2, 2, 0, 6, 7, 5, 7, 6, 8, 9, 0, 9,
+       4, 4, 7, 0, 9, 4, 9, 6, 9, 4, 5, 7, 9, 2, 4, 5, 1, 4, 3, 9, 6, 5,
+       6, 9, 3, 3, 5, 0, 7, 2, 1, 3, 6, 4, 0, 0, 2, 5, 0, 1, 0, 2, 3, 9,
+       8, 4, 9, 8, 0, 2, 6, 4, 4, 0, 1, 8, 8, 3, 6, 9, 6, 6, 7, 8, 2, 4,
+       5, 7, 6, 5, 3, 0, 5, 0, 5, 0, 8, 2, 6, 7, 3, 8, 2, 1, 7, 6, 7, 1,
+       0, 9, 5, 5, 0, 1, 7, 6, 9, 0, 4, 7, 7, 1, 5, 9, 4, 0, 8, 5, 9, 9,
+       6, 7, 1, 8, 3, 2, 3, 8, 2, 2, 4, 6, 0, 0, 5, 3, 8, 2, 3, 7, 2, 9,
+       3, 8, 7, 8, 2, 7, 9, 0, 2, 3, 2, 2, 2, 3, 3, 6, 2, 3, 2, 8, 0, 5,
+       5, 1, 4, 5, 6, 6, 2, 7, 0, 1, 7, 7, 8, 2, 9, 2, 2, 4, 2, 1, 1, 1,
+       6, 6, 6, 5, 1, 1, 7, 0, 4, 3, 3, 7, 1, 2, 3, 5, 5, 5, 6, 1, 4, 3,
+       7, 8, 8, 3, 6, 6, 2, 3, 0, 9, 4, 3, 8, 0, 0, 1, 1, 5, 4, 9, 3, 1,
+       8, 9, 3, 9, 9, 2, 9, 4, 8, 2, 9, 8, 8, 1, 5, 3, 6, 8, 7, 6, 9, 8,
+       0, 6, 4, 0, 0, 2, 5, 8, 2, 0, 2, 7, 6, 9, 7, 1, 5, 5, 6, 6, 3, 6,
+       2, 4, 7, 0, 5, 6, 4, 6, 5, 2, 4, 6, 1, 6, 0, 4, 0, 3, 1, 8, 5, 4,
+       4, 1, 7, 3, 9, 4, 7, 9, 7, 3, 7, 2, 8, 4, 6, 6, 1, 2, 9, 0, 4, 8,
+       7, 3, 9, 8, 7, 7, 0, 2, 4, 1, 1, 4, 1, 5, 4, 0, 5, 6, 2, 8, 5, 0,
+       2, 1, 3, 5, 7, 3, 5, 1, 3, 5]), array([9, 4, 3, 2, 4, 4, 1, 4, 2, 2, 3, 8, 0, 6, 8, 5, 6, 6, 4, 7, 1, 1,
+       4, 6, 2, 3, 9, 6, 9, 1, 3, 6, 8, 5, 9, 6, 8, 1, 6, 0, 2, 3, 7, 9,
+       0, 9, 7, 6, 3, 9, 2, 6, 1, 6, 7, 3, 8, 3, 8, 3, 8, 5, 9, 6, 1, 2,
+       5, 2, 1, 4, 3, 7, 5, 9, 3, 9, 3, 2, 9, 1, 8, 5, 9, 7, 2, 6, 0, 8,
+       5, 7, 1, 5, 8, 5, 7, 1, 5, 0, 3, 9, 3, 6, 9, 1, 3, 9, 8, 2, 2, 3,
+       2, 5, 9, 7, 9, 9, 8, 9, 7, 0, 3, 3, 2, 0, 3, 7, 6, 3, 3, 2, 0, 6,
+       6, 5, 5, 7, 5, 9, 8, 2, 9, 8, 0, 4, 0, 1, 2, 0, 4, 7, 3, 8, 5, 1,
+       6, 6, 5, 5, 4, 6, 3, 6, 8, 2, 3, 7, 0, 7, 0, 4, 1, 9, 5, 7, 8, 6,
+       6, 8, 0, 7, 2, 8, 4, 8, 2, 0, 9, 0, 0, 2, 9, 6, 6, 5, 6, 0, 3, 7,
+       5, 5, 7, 9, 3, 4, 5, 0, 5, 2, 3, 2, 6, 0, 4, 9, 0, 7, 0, 9, 7, 2,
+       6, 4, 6, 9, 5, 4, 7, 0, 6, 8, 8, 9, 9, 9, 0, 9, 8, 6, 4, 8, 1, 9,
+       1, 0, 5, 8, 6, 9, 6, 0, 8, 1, 3, 9, 4, 8, 4, 3, 2, 6, 0, 8, 9, 9,
+       4, 3, 0, 2, 4, 4, 0, 3, 5, 7, 5, 7, 7, 9, 0, 9, 5, 3, 8, 2, 4, 2,
+       3, 1, 2, 8, 9, 2, 8, 1, 4, 2, 0, 4, 5, 4, 8, 1, 7, 4, 1, 1, 0, 2,
+       7, 7, 4, 4, 4, 4, 8, 4, 3, 6, 6, 0, 1, 3, 9, 8, 4, 8, 9, 6, 2, 0,
+       5, 5, 9, 4, 2, 0, 8, 8, 0, 4, 0, 7, 6, 9, 5, 3, 5, 4, 4, 4, 4, 3,
+       7, 9, 2, 5, 1, 8, 3, 2, 6, 9, 6, 3, 1, 7, 4, 6, 3, 7, 8, 6, 2, 4,
+       6, 8, 0, 1, 9, 9, 1, 0, 0, 8, 9, 4, 7, 4, 4, 1, 9, 8, 8, 6, 1, 7,
+       4, 8, 8, 8, 0, 5, 6, 6, 8, 3, 4, 4, 1, 2, 1, 5, 7, 1, 7, 2, 8, 5,
+       9, 5, 6, 1, 9, 5, 0, 4, 3, 3, 0, 8, 2, 8, 0, 9, 0, 4, 6, 9, 2, 8,
+       2, 7, 7, 2, 2, 7, 1, 6, 1, 3, 4, 4, 8, 6, 0, 1, 9, 4, 2, 7, 5, 3,
+       9, 0, 1, 9, 0, 9, 8, 7, 0, 4, 9, 0, 5, 2, 1, 0, 2, 8, 8, 0, 5, 7,
+       6, 6, 5, 3, 7, 7, 7, 4, 2, 0, 1, 7, 3, 2, 7, 3, 2, 2, 1, 5, 9, 9,
+       8, 0, 8, 4, 3, 3, 8, 5, 0, 8, 4, 5, 7, 5, 1, 5, 0, 2, 0, 5, 4, 2,
+       3, 6, 2, 6, 2, 2, 3, 4, 6, 6, 5, 3, 0, 1, 2, 7, 7, 5, 3, 1, 1, 7,
+       6, 1, 6, 3, 3, 3, 3, 4, 8, 1, 0, 7, 7, 6, 8, 1, 2, 5, 3, 4, 1, 1,
+       9, 3, 1, 4, 2, 7, 1, 6, 5, 7, 7, 7, 6, 6, 1, 9, 5, 0, 9, 5, 7, 0,
+       0, 4, 6, 8, 0, 1, 5, 0, 9, 3, 1, 1, 2, 0, 3, 2, 9, 1, 9, 6, 2, 4,
+       8, 8, 5, 9, 2, 1, 9, 4, 4, 3, 0, 6, 6, 0, 4, 1, 0, 9, 5, 6, 5, 6,
+       9, 4, 4, 2, 6, 8, 4, 7, 6, 5, 9, 8, 7, 1, 9, 5, 4, 3, 5, 4, 3, 4,
+       1, 5, 5, 4, 0, 8, 4, 4, 0, 9, 2, 8, 9, 8, 0, 2, 2, 2, 6, 7, 8, 1,
+       9, 8, 0, 3, 8, 6, 8, 1, 6, 5, 4, 2, 1, 4, 3, 9, 7, 8, 3, 0, 8, 3,
+       4, 2, 9, 1, 0, 0, 3, 0, 4, 5, 9, 0, 7, 5, 9, 5, 8, 8, 6, 3, 1, 9,
+       5, 2, 4, 7, 6, 1, 8, 6, 9, 3, 1, 3, 7, 4, 0, 6, 7, 6, 9, 2, 4, 1,
+       9, 8, 5, 8, 2, 2, 5, 0, 2, 0, 7, 0, 6, 6, 4, 8, 7, 9, 6, 9, 2, 3,
+       8, 8, 3, 9, 9, 8, 7, 2, 3, 5, 5, 1, 8, 7, 4, 3, 5, 2, 2, 2, 1, 4,
+       2, 2, 8, 4, 9, 8, 2, 1, 2, 5, 6, 3, 4, 5, 7, 6, 7, 6, 5, 0, 2, 4,
+       4, 3, 0, 4, 2, 6, 1, 8, 8, 3, 0, 7, 4, 9, 7, 9, 2, 0, 4, 7, 3, 7,
+       6, 6, 2, 3, 7, 3, 6, 8, 2, 3, 3, 5, 5, 5, 2, 4, 2, 8, 7, 4, 3, 7,
+       7, 8, 5, 2, 8, 4, 3, 5, 4, 2, 9, 1, 4, 0, 0, 5, 6, 5, 6, 8, 0, 3,
+       4, 4, 4, 2, 2, 0, 5, 0, 3, 4, 7, 7, 3, 9, 7, 3, 7, 3, 7, 7, 7, 1,
+       7, 4, 4, 7, 9, 1, 7, 7, 4, 5, 9, 0, 8, 7, 3, 6, 2, 3, 8, 2, 5, 4,
+       8, 4, 0, 7, 5, 2, 7, 7, 2, 6, 4, 0, 2, 4, 3, 8, 9, 4, 5, 5, 6, 7,
+       1, 9, 6, 5, 0, 3, 4, 4, 0, 6, 6, 8, 3, 6, 0, 3, 3, 3, 8, 3, 3, 8,
+       4, 3, 8, 2, 9, 1, 4, 9, 5, 0, 6, 5, 0, 2, 6, 5, 4, 1, 5, 9, 0, 6,
+       2, 5, 4, 5, 8, 2, 8, 7, 5, 0]), array([7, 9, 9, 8, 2, 1, 0, 2, 7, 5, 0, 3, 8, 5, 0, 7, 9, 5, 8, 6, 9, 0,
+       7, 1, 9, 3, 5, 0, 5, 1, 7, 8, 9, 2, 0, 0, 8, 1, 1, 1, 6, 2, 3, 6,
+       2, 7, 1, 9, 3, 7, 6, 3, 1, 0, 5, 9, 4, 3, 9, 5, 0, 9, 2, 7, 5, 8,
+       0, 1, 3, 4, 8, 5, 1, 5, 7, 7, 2, 8, 4, 2, 2, 5, 3, 3, 1, 4, 9, 2,
+       4, 5, 2, 2, 3, 2, 1, 5, 8, 9, 2, 6, 6, 1, 7, 7, 5, 4, 4, 0, 5, 8,
+       8, 6, 6, 7, 2, 6, 4, 5, 1, 7, 5, 2, 4, 4, 6, 5, 2, 3, 8, 9, 3, 4,
+       3, 2, 6, 7, 2, 3, 2, 7, 7, 3, 0, 1, 4, 0, 6, 5, 5, 1, 6, 7, 6, 1,
+       3, 4, 0, 9, 9, 6, 8, 8, 3, 2, 3, 3, 8, 5, 3, 0, 9, 0, 8, 1, 3, 4,
+       8, 2, 4, 6, 1, 3, 5, 5, 1, 1, 1, 9, 5, 0, 4, 2, 9, 2, 5, 7, 4, 3,
+       3, 9, 1, 7, 2, 6, 1, 2, 9, 7, 9, 0, 4, 7, 8, 4, 9, 9, 4, 2, 9, 9,
+       8, 8, 6, 3, 2, 4, 6, 1, 7, 8, 2, 5, 8, 0, 4, 4, 5, 2, 4, 6, 5, 6,
+       5, 7, 7, 4, 5, 2, 0, 1, 1, 9, 6, 4, 3, 8, 7, 4, 0, 1, 5, 5, 0, 7,
+       0, 8, 5, 6, 1, 2, 3, 5, 8, 9, 6, 7, 6, 0, 7, 3, 1, 9, 4, 1, 8, 8,
+       1, 0, 6, 1, 7, 2, 5, 4, 5, 6, 6, 4, 8, 6, 4, 7, 9, 9, 4, 5, 1, 3,
+       9, 8, 6, 7, 3, 9, 5, 2, 5, 2, 1, 7, 1, 7, 0, 8, 3, 8, 3, 4, 1, 4,
+       0, 7, 9, 8, 5, 5, 6, 3, 9, 1, 2, 0, 0, 2, 8, 0, 2, 9, 3, 2, 0, 9,
+       9, 3, 2, 0, 6, 9, 7, 3, 7, 5, 1, 4, 6, 0, 7, 5, 8, 6, 7, 5, 2, 5,
+       5, 3, 3, 2, 2, 9, 9, 8, 8, 3, 5, 4, 3, 2, 8, 1, 1, 0, 7, 2, 1, 8,
+       7, 7, 5, 7, 6, 0, 4, 0, 3, 7, 3, 6, 2, 6, 5, 6, 3, 0, 3, 4, 5, 8,
+       4, 4, 0, 0, 1, 0, 6, 3, 8, 0, 1, 0, 7, 1, 3, 1, 8, 0, 2, 9, 8, 6,
+       5, 8, 4, 3, 4, 1, 0, 3, 9, 7, 4, 0, 3, 0, 8, 1, 1, 5, 7, 0, 0, 4,
+       8, 8, 8, 4, 1, 2, 9, 1, 2, 8, 7, 0, 7, 6, 2, 9, 0, 6, 7, 7, 5, 8,
+       2, 4, 4, 8, 4, 8, 0, 2, 7, 7, 6, 9, 1, 9, 9, 7, 5, 3, 7, 6, 0, 3,
+       9, 2, 9, 5, 6, 1, 0, 0, 2, 4, 5, 6, 3, 6, 4, 3, 5, 8, 9, 3, 9, 3,
+       4, 9, 3, 9, 5, 2, 8, 2, 6, 2, 2, 7, 2, 7, 6, 2, 4, 1, 2, 9, 9, 5,
+       2, 9, 8, 7, 7, 5, 6, 2, 8, 3, 7, 2, 3, 7, 3, 3, 6, 2, 1, 1, 1, 6,
+       9, 4, 0, 2, 4, 8, 0, 5, 4, 3, 1, 6, 1, 9, 8, 1, 1, 2, 8, 4, 8, 8,
+       3, 2, 6, 1, 0, 8, 1, 7, 6, 8, 5, 6, 3, 6, 7, 9, 2, 7, 7, 0, 7, 1,
+       7, 0, 6, 2, 7, 5, 0, 6, 9, 6, 2, 3, 1, 4, 1, 6, 9, 0, 5, 8, 9, 9,
+       6, 0, 8, 2, 0, 8, 9, 9, 8, 4, 3, 3, 6, 7, 0, 6, 4, 9, 1, 5, 8, 0,
+       0, 1, 0, 8, 9, 3, 8, 9, 3, 7, 8, 9, 4, 4, 6, 0, 9, 7, 2, 8, 0, 6,
+       2, 0, 6, 5, 5, 8, 5, 8, 6, 4, 0, 2, 6, 4, 3, 6, 2, 3, 7, 7, 2, 4,
+       2, 4, 9, 0, 2, 5, 4, 5, 4, 6, 0, 7, 7, 5, 0, 2, 0, 8, 5, 3, 7, 4,
+       5, 1, 9, 6, 5, 1, 8, 5, 4, 8, 5, 2, 3, 3, 8, 2, 2, 8, 2, 5, 7, 5,
+       5, 8, 7, 6, 1, 1, 8, 5, 1, 9, 9, 2, 2, 9, 1, 5, 2, 1, 3, 9, 9, 1,
+       3, 1, 2, 0, 6, 1, 7, 6, 8, 4, 0, 3, 3, 7, 2, 3, 6, 4, 5, 2, 7, 2,
+       4, 9, 5, 1, 6, 8, 8, 2, 1, 7, 1, 8, 0, 8, 5, 7, 0, 3, 6, 4, 2, 7,
+       7, 8, 2, 8, 9, 8, 8, 4, 6, 7, 0, 1, 2, 1, 1, 9, 4, 6, 4, 2, 7, 4,
+       6, 1, 9, 4, 9, 1, 4, 5, 1, 9, 2, 8, 0, 1, 5, 1, 7, 9, 2, 0, 4, 8,
+       4, 0, 2, 0, 1, 0, 5, 3, 6, 2, 2, 2, 2, 6, 6, 8, 6, 2, 3, 5, 2, 8,
+       9, 8, 0, 1, 5, 0, 9, 1, 6, 7, 9, 7, 3, 6, 2, 0, 4, 7, 6, 4, 4, 5,
+       2, 3, 4, 4, 5, 2, 9, 6, 1, 4, 7, 4, 8, 6, 5, 9, 8, 9, 9, 4, 4, 8,
+       6, 6, 4, 2, 1, 8, 3, 3, 0, 3, 8, 9, 2, 6, 2, 6, 5, 6, 8, 4, 3, 5,
+       0, 3, 2, 0, 0, 4, 8, 9, 8, 6, 9, 2, 1, 0, 7, 9, 0, 5, 0, 6, 2, 0,
+       6, 7, 6, 2, 6, 7, 8, 2, 4, 7, 6, 8, 7, 7, 3, 2, 5, 9, 3, 8, 2, 6,
+       4, 9, 6, 2, 1, 4, 0, 6, 6, 4]), array([3, 4, 5, 3, 6, 5, 9, 9, 5, 1, 6, 0, 2, 7, 9, 5, 3, 5, 6, 2, 1, 5,
+       5, 9, 0, 1, 3, 4, 5, 7, 4, 5, 9, 6, 1, 7, 4, 2, 8, 8, 5, 6, 0, 3,
+       4, 9, 4, 5, 6, 0, 7, 0, 3, 0, 7, 5, 8, 3, 8, 1, 5, 9, 1, 0, 1, 8,
+       0, 8, 2, 5, 6, 7, 1, 0, 2, 9, 0, 4, 1, 9, 5, 3, 5, 7, 3, 1, 9, 3,
+       9, 4, 9, 6, 0, 8, 8, 6, 6, 9, 6, 9, 3, 2, 0, 1, 7, 3, 6, 5, 3, 3,
+       3, 6, 4, 0, 0, 8, 4, 2, 2, 2, 1, 8, 6, 8, 5, 3, 9, 9, 0, 9, 8, 1,
+       5, 4, 3, 7, 0, 9, 7, 6, 0, 4, 1, 9, 8, 4, 7, 7, 5, 9, 7, 7, 5, 5,
+       6, 8, 5, 7, 5, 8, 8, 2, 5, 5, 2, 8, 4, 5, 6, 8, 8, 5, 3, 5, 5, 9,
+       4, 3, 3, 9, 0, 2, 4, 1, 0, 2, 7, 5, 3, 4, 3, 7, 6, 2, 3, 5, 2, 0,
+       5, 9, 6, 3, 9, 6, 0, 2, 5, 6, 7, 7, 2, 0, 1, 7, 0, 8, 9, 4, 3, 4,
+       3, 5, 3, 6, 0, 4, 2, 6, 9, 5, 1, 1, 9, 1, 9, 2, 4, 9, 1, 9, 8, 6,
+       3, 6, 8, 2, 0, 9, 3, 5, 8, 7, 4, 2, 2, 7, 9, 1, 8, 2, 4, 7, 6, 0,
+       5, 5, 6, 9, 8, 8, 5, 5, 7, 1, 2, 7, 9, 0, 5, 7, 5, 2, 5, 4, 7, 1,
+       3, 3, 4, 3, 6, 2, 0, 5, 8, 0, 4, 2, 9, 2, 4, 2, 3, 8, 0, 8, 4, 6,
+       4, 2, 8, 6, 9, 8, 4, 1, 9, 7, 0, 8, 3, 2, 4, 6, 8, 2, 4, 1, 3, 0,
+       8, 2, 0, 8, 0, 0, 0, 0, 2, 2, 3, 6, 9, 7, 0, 9, 1, 0, 7, 2, 8, 3,
+       0, 8, 4, 3, 5, 8, 7, 8, 4, 0, 0, 9, 7, 3, 1, 5, 2, 6, 5, 3, 2, 3,
+       7, 0, 3, 4, 1, 1, 8, 9, 0, 4, 8, 3, 1, 1, 5, 7, 2, 3, 9, 4, 5, 2,
+       5, 4, 7, 1, 7, 6, 2, 6, 1, 8, 8, 9, 4, 9, 5, 6, 6, 7, 1, 1, 2, 2,
+       4, 8, 5, 5, 9, 2, 9, 8, 5, 7, 2, 3, 8, 5, 7, 4, 7, 6, 2, 6, 0, 6,
+       2, 0, 4, 0, 1, 4, 2, 3, 5, 8, 7, 5, 1, 5, 2, 2, 5, 3, 6, 5, 4, 3,
+       2, 9, 4, 4, 0, 1, 8, 8, 6, 5, 3, 7, 2, 3, 2, 9, 0, 9, 2, 7, 8, 1,
+       2, 1, 3, 7, 2, 9, 3, 5, 5, 8, 4, 5, 5, 8, 5, 5, 6, 9, 5, 8, 6, 1,
+       2, 4, 2, 4, 9, 2, 1, 9, 3, 0, 8, 2, 8, 4, 2, 6, 4, 1, 3, 6, 9, 4,
+       6, 8, 6, 9, 6, 4, 7, 2, 0, 9, 4, 4, 4, 8, 9, 7, 7, 9, 3, 5, 0, 0,
+       3, 3, 3, 7, 6, 1, 4, 5, 2, 4, 4, 8, 5, 6, 0, 3, 4, 6, 3, 2, 0, 3,
+       5, 7, 0, 3, 5, 4, 7, 8, 5, 7, 0, 2, 8, 0, 2, 4, 6, 6, 6, 3, 7, 6,
+       3, 5, 9, 9, 7, 4, 9, 1, 9, 6, 5, 1, 7, 0, 2, 0, 2, 7, 4, 9, 8, 3,
+       5, 3, 0, 5, 1, 6, 7, 7, 8, 8, 2, 7, 9, 2, 4, 6, 5, 9, 8, 4, 6, 7,
+       8, 2, 8, 5, 8, 9, 0, 2, 3, 0, 9, 7, 3, 7, 9, 5, 3, 6, 6, 9, 9, 1,
+       5, 1, 2, 2, 4, 0, 9, 5, 4, 2, 8, 9, 9, 2, 0, 2, 6, 9, 1, 3, 8, 8,
+       6, 6, 4, 9, 6, 4, 4, 0, 4, 9, 2, 2, 0, 4, 0, 9, 6, 7, 9, 0, 9, 3,
+       9, 9, 9, 6, 2, 3, 6, 7, 6, 0, 5, 7, 6, 4, 4, 9, 8, 0, 9, 4, 6, 0,
+       7, 1, 3, 6, 6, 0, 4, 7, 1, 1, 4, 9, 8, 6, 8, 0, 6, 1, 1, 8, 5, 5,
+       5, 3, 4, 5, 5, 8, 6, 9, 3, 4, 3, 4, 2, 4, 3, 3, 8, 8, 9, 5, 7, 2,
+       8, 2, 3, 1, 9, 6, 4, 8, 5, 1, 6, 1, 7, 6, 4, 3, 2, 3, 9, 0, 5, 2,
+       3, 9, 5, 3, 2, 4, 4, 5, 8, 3, 4, 5, 6, 6, 7, 3, 1, 6, 5, 9, 8, 3,
+       2, 0, 4, 7, 3, 9, 9, 4, 1, 6, 7, 6, 6, 1, 5, 8, 1, 0, 8, 6, 3, 7,
+       1, 5, 9, 4, 1, 6, 0, 3, 7, 2, 9, 2, 2, 6, 9, 1, 0, 5, 7, 4, 2, 8,
+       9, 0, 8, 6, 4, 3, 3, 6, 4, 5, 4, 2, 3, 1, 4, 6, 8, 3, 9, 7, 9, 4,
+       0, 8, 9, 8, 0, 8, 1, 9, 3, 2, 7, 0, 6, 0, 5, 9, 5, 4, 8, 1, 0, 2,
+       5, 0, 8, 3, 0, 1, 4, 0, 3, 1, 6, 4, 7, 9, 5, 5, 0, 4, 7, 9, 1, 9,
+       1, 4, 6, 3, 9, 9, 9, 8, 9, 7, 1, 1, 4, 1, 0, 7, 0, 9, 6, 6, 2, 4,
+       7, 6, 4, 5, 8, 0, 4, 7, 1, 7, 3, 4, 7, 5, 5, 2, 0, 2, 0, 5, 5, 8,
+       5, 8, 4, 0, 8, 4, 9, 7, 6, 9, 8, 0, 8, 4, 2, 9, 1, 4, 6, 0, 7, 7,
+       1, 6, 1, 5, 6, 5, 7, 3, 8, 4]), array([5, 8, 5, 8, 5, 9, 1, 3, 2, 5, 3, 1, 2, 1, 2, 6, 7, 2, 0, 5, 3, 1,
+       6, 2, 7, 3, 6, 0, 9, 8, 0, 6, 4, 3, 2, 6, 8, 7, 2, 1, 1, 9, 5, 4,
+       5, 8, 0, 1, 0, 9, 1, 8, 2, 4, 7, 4, 2, 4, 4, 7, 0, 0, 6, 4, 6, 7,
+       8, 5, 9, 9, 2, 9, 3, 3, 5, 7, 7, 6, 7, 0, 0, 0, 6, 3, 1, 2, 6, 3,
+       7, 3, 2, 2, 8, 8, 6, 6, 0, 0, 3, 1, 1, 1, 3, 4, 4, 6, 4, 7, 3, 2,
+       3, 9, 7, 2, 7, 9, 2, 3, 6, 7, 5, 9, 2, 6, 3, 5, 6, 5, 3, 4, 6, 9,
+       1, 7, 7, 5, 9, 4, 2, 3, 8, 0, 9, 6, 6, 1, 3, 6, 6, 3, 9, 3, 6, 5,
+       2, 0, 4, 7, 4, 8, 5, 5, 0, 0, 9, 0, 3, 6, 2, 9, 8, 1, 1, 4, 3, 4,
+       0, 3, 7, 3, 8, 6, 4, 2, 4, 1, 2, 7, 5, 2, 6, 8, 0, 4, 6, 4, 2, 3,
+       2, 4, 1, 6, 0, 5, 8, 8, 1, 8, 6, 2, 8, 2, 4, 4, 0, 9, 7, 6, 7, 4,
+       2, 3, 8, 9, 4, 8, 8, 4, 2, 0, 1, 4, 4, 8, 6, 6, 7, 2, 7, 0, 0, 7,
+       2, 3, 1, 8, 9, 7, 7, 0, 1, 7, 9, 7, 7, 5, 9, 2, 7, 5, 5, 1, 4, 4,
+       7, 1, 3, 6, 3, 0, 0, 0, 8, 0, 8, 5, 6, 8, 6, 6, 4, 0, 0, 8, 6, 7,
+       4, 8, 3, 9, 4, 9, 8, 2, 3, 0, 4, 4, 8, 1, 8, 4, 3, 8, 8, 4, 2, 4,
+       3, 6, 3, 0, 5, 8, 0, 7, 5, 4, 7, 5, 8, 9, 0, 4, 6, 7, 1, 1, 4, 3,
+       5, 7, 1, 7, 1, 9, 3, 0, 0, 8, 9, 7, 2, 8, 9, 9, 3, 5, 0, 3, 3, 2,
+       1, 0, 1, 5, 2, 7, 1, 4, 1, 3, 5, 1, 9, 8, 5, 2, 0, 7, 2, 9, 2, 0,
+       9, 2, 2, 6, 2, 1, 8, 4, 4, 8, 4, 1, 7, 0, 3, 6, 1, 6, 3, 7, 4, 4,
+       7, 8, 2, 7, 4, 7, 3, 6, 6, 3, 5, 9, 8, 6, 0, 0, 8, 4, 3, 6, 9, 6,
+       2, 5, 0, 6, 3, 1, 5, 2, 2, 7, 3, 4, 6, 2, 8, 7, 6, 3, 9, 3, 4, 3,
+       6, 7, 7, 1, 1, 7, 8, 4, 5, 3, 6, 5, 6, 2, 9, 2, 5, 9, 1, 1, 7, 8,
+       3, 5, 1, 3, 8, 5, 0, 8, 0, 2, 3, 9, 8, 3, 0, 0, 7, 5, 7, 3, 2, 3,
+       3, 7, 5, 5, 6, 9, 0, 2, 1, 2, 5, 5, 1, 4, 0, 7, 1, 8, 8, 4, 0, 1,
+       7, 8, 9, 0, 7, 2, 5, 7, 8, 3, 0, 1, 2, 3, 9, 2, 7, 0, 0, 2, 2, 4,
+       1, 5, 3, 3, 5, 1, 5, 5, 9, 0, 9, 8, 0, 9, 3, 0, 7, 9, 6, 5, 5, 2,
+       6, 8, 0, 1, 7, 7, 7, 1, 3, 0, 1, 4, 1, 0, 3, 1, 9, 0, 6, 3, 6, 0,
+       5, 4, 0, 8, 8, 0, 1, 5, 8, 3, 7, 2, 9, 1, 9, 9, 2, 7, 6, 1, 0, 9,
+       8, 8, 6, 0, 2, 0, 5, 0, 8, 9, 2, 6, 6, 1, 2, 1, 5, 8, 9, 7, 4, 1,
+       2, 8, 9, 0, 2, 0, 9, 9, 1, 1, 5, 5, 3, 9, 3, 1, 5, 2, 2, 5, 1, 6,
+       9, 5, 4, 5, 4, 9, 6, 0, 8, 2, 1, 9, 7, 0, 8, 0, 1, 0, 2, 3, 8, 6,
+       4, 1, 5, 6, 1, 9, 4, 9, 6, 3, 8, 7, 3, 0, 3, 9, 7, 2, 6, 2, 9, 4,
+       6, 0, 9, 6, 7, 4, 7, 0, 9, 9, 5, 6, 5, 4, 1, 3, 5, 5, 2, 9, 5, 2,
+       9, 7, 7, 4, 9, 4, 4, 8, 7, 8, 7, 4, 5, 0, 8, 2, 3, 0, 0, 8, 8, 4,
+       0, 2, 5, 7, 2, 6, 2, 5, 6, 9, 7, 3, 4, 1, 5, 4, 8, 8, 4, 3, 0, 7,
+       2, 9, 4, 6, 6, 4, 9, 2, 4, 8, 8, 0, 3, 8, 1, 4, 1, 0, 6, 6, 9, 1,
+       6, 2, 3, 4, 0, 1, 2, 2, 0, 8, 8, 4, 7, 9, 9, 6, 6, 0, 5, 6, 7, 3,
+       6, 7, 8, 7, 3, 1, 0, 3, 8, 4, 5, 1, 8, 6, 2, 8, 5, 7, 6, 2, 8, 6,
+       5, 8, 0, 5, 9, 2, 7, 0, 5, 8, 6, 8, 9, 3, 8, 3, 2, 6, 8, 7, 8, 3,
+       3, 8, 5, 4, 1, 2, 9, 6, 5, 9, 4, 3, 8, 5, 5, 8, 8, 2, 0, 3, 1, 4,
+       1, 0, 8, 0, 5, 8, 4, 9, 1, 8, 0, 0, 6, 7, 7, 7, 5, 6, 3, 6, 5, 8,
+       2, 6, 5, 7, 5, 4, 7, 3, 2, 9, 5, 8, 8, 5, 7, 2, 2, 8, 7, 6, 7, 7,
+       2, 7, 6, 4, 0, 6, 3, 1, 4, 6, 3, 9, 8, 3, 8, 1, 0, 0, 5, 3, 5, 8,
+       4, 0, 6, 1, 7, 0, 2, 2, 1, 7, 3, 0, 8, 6, 7, 7, 0, 0, 1, 4, 1, 1,
+       6, 6, 6, 1, 3, 6, 0, 1, 3, 8, 5, 0, 1, 6, 5, 5, 4, 3, 9, 8, 6, 0,
+       5, 4, 9, 2, 8, 4, 8, 8, 2, 1, 4, 8, 6, 7, 3, 1, 3, 4, 9, 4, 8, 4,
+       5, 0, 9, 1, 3, 8, 7, 5, 4, 6])]
+
+################################################################################
+# TODO:                                                                        #
+# Perform k-fold cross validation to find the best value of k. For each        #
+# possible value of k, run the k-nearest-neighbor algorithm num_folds times,   #
+# where in each case you use all but one of the folds as training data and the #
+# last fold as a validation set. Store the accuracies for all fold and all     #
+# values of k in the k_to_accuracies dictionary.                               #
+################################################################################
+
+INFO:perform_k_fold_cv:====== 5-fold CV to compute accs for k=1 =======
+INFO:perform_k_fold_cv:fold:0
+Got 263 / 1000 correct => accuracy: 0.263
+INFO:perform_k_fold_cv:fold:1
+Got 257 / 1000 correct => accuracy: 0.257
+INFO:perform_k_fold_cv:fold:2
+Got 264 / 1000 correct => accuracy: 0.264
+INFO:perform_k_fold_cv:fold:3
+Got 278 / 1000 correct => accuracy: 0.278
+INFO:perform_k_fold_cv:fold:4
+Got 266 / 1000 correct => accuracy: 0.266
+INFO:perform_k_fold_cv:accs for k=1 is:[0.263, 0.257, 0.264, 0.278, 0.266]
+INFO:perform_k_fold_cv:====== 5-fold CV to compute accs for k=3 =======
+INFO:perform_k_fold_cv:fold:0
+Got 239 / 1000 correct => accuracy: 0.239
+INFO:perform_k_fold_cv:fold:1
+Got 249 / 1000 correct => accuracy: 0.249
+INFO:perform_k_fold_cv:fold:2
+Got 240 / 1000 correct => accuracy: 0.24
+INFO:perform_k_fold_cv:fold:3
+Got 266 / 1000 correct => accuracy: 0.266
+INFO:perform_k_fold_cv:fold:4
+Got 254 / 1000 correct => accuracy: 0.254
+INFO:perform_k_fold_cv:accs for k=3 is:[0.239, 0.249, 0.24, 0.266, 0.254]
+INFO:perform_k_fold_cv:====== 5-fold CV to compute accs for k=5 =======
+INFO:perform_k_fold_cv:fold:0
+Got 248 / 1000 correct => accuracy: 0.248
+INFO:perform_k_fold_cv:fold:1
+Got 266 / 1000 correct => accuracy: 0.266
+INFO:perform_k_fold_cv:fold:2
+Got 280 / 1000 correct => accuracy: 0.28
+INFO:perform_k_fold_cv:fold:3
+Got 292 / 1000 correct => accuracy: 0.292
+INFO:perform_k_fold_cv:fold:4
+Got 280 / 1000 correct => accuracy: 0.28
+INFO:perform_k_fold_cv:accs for k=5 is:[0.248, 0.266, 0.28, 0.292, 0.28]
+INFO:perform_k_fold_cv:====== 5-fold CV to compute accs for k=8 =======
+INFO:perform_k_fold_cv:fold:0
+Got 262 / 1000 correct => accuracy: 0.262
+INFO:perform_k_fold_cv:fold:1
+Got 282 / 1000 correct => accuracy: 0.282
+INFO:perform_k_fold_cv:fold:2
+Got 273 / 1000 correct => accuracy: 0.273
+INFO:perform_k_fold_cv:fold:3
+Got 290 / 1000 correct => accuracy: 0.29
+INFO:perform_k_fold_cv:fold:4
+Got 273 / 1000 correct => accuracy: 0.273
+INFO:perform_k_fold_cv:accs for k=8 is:[0.262, 0.282, 0.273, 0.29, 0.273]
+INFO:perform_k_fold_cv:====== 5-fold CV to compute accs for k=10 =======
+INFO:perform_k_fold_cv:fold:0
+Got 265 / 1000 correct => accuracy: 0.265
+INFO:perform_k_fold_cv:fold:1
+Got 296 / 1000 correct => accuracy: 0.296
+INFO:perform_k_fold_cv:fold:2
+Got 276 / 1000 correct => accuracy: 0.276
+INFO:perform_k_fold_cv:fold:3
+Got 284 / 1000 correct => accuracy: 0.284
+INFO:perform_k_fold_cv:fold:4
+Got 280 / 1000 correct => accuracy: 0.28
+INFO:perform_k_fold_cv:accs for k=10 is:[0.265, 0.296, 0.276, 0.284, 0.28]
+INFO:perform_k_fold_cv:====== 5-fold CV to compute accs for k=12 =======
+INFO:perform_k_fold_cv:fold:0
+Got 260 / 1000 correct => accuracy: 0.26
+INFO:perform_k_fold_cv:fold:1
+Got 295 / 1000 correct => accuracy: 0.295
+INFO:perform_k_fold_cv:fold:2
+Got 279 / 1000 correct => accuracy: 0.279
+INFO:perform_k_fold_cv:fold:3
+Got 283 / 1000 correct => accuracy: 0.283
+INFO:perform_k_fold_cv:fold:4
+Got 280 / 1000 correct => accuracy: 0.28
+INFO:perform_k_fold_cv:accs for k=12 is:[0.26, 0.295, 0.279, 0.283, 0.28]
+INFO:perform_k_fold_cv:====== 5-fold CV to compute accs for k=15 =======
+INFO:perform_k_fold_cv:fold:0
+Got 252 / 1000 correct => accuracy: 0.252
+INFO:perform_k_fold_cv:fold:1
+Got 289 / 1000 correct => accuracy: 0.289
+INFO:perform_k_fold_cv:fold:2
+Got 278 / 1000 correct => accuracy: 0.278
+INFO:perform_k_fold_cv:fold:3
+Got 282 / 1000 correct => accuracy: 0.282
+INFO:perform_k_fold_cv:fold:4
+Got 274 / 1000 correct => accuracy: 0.274
+INFO:perform_k_fold_cv:accs for k=15 is:[0.252, 0.289, 0.278, 0.282, 0.274]
+INFO:perform_k_fold_cv:====== 5-fold CV to compute accs for k=20 =======
+INFO:perform_k_fold_cv:fold:0
+Got 270 / 1000 correct => accuracy: 0.27
+INFO:perform_k_fold_cv:fold:1
+Got 279 / 1000 correct => accuracy: 0.279
+INFO:perform_k_fold_cv:fold:2
+Got 279 / 1000 correct => accuracy: 0.279
+INFO:perform_k_fold_cv:fold:3
+Got 282 / 1000 correct => accuracy: 0.282
+INFO:perform_k_fold_cv:fold:4
+Got 285 / 1000 correct => accuracy: 0.285
+INFO:perform_k_fold_cv:accs for k=20 is:[0.27, 0.279, 0.279, 0.282, 0.285]
+INFO:perform_k_fold_cv:====== 5-fold CV to compute accs for k=50 =======
+INFO:perform_k_fold_cv:fold:0
+Got 271 / 1000 correct => accuracy: 0.271
+INFO:perform_k_fold_cv:fold:1
+Got 288 / 1000 correct => accuracy: 0.288
+INFO:perform_k_fold_cv:fold:2
+Got 278 / 1000 correct => accuracy: 0.278
+INFO:perform_k_fold_cv:fold:3
+Got 269 / 1000 correct => accuracy: 0.269
+INFO:perform_k_fold_cv:fold:4
+Got 266 / 1000 correct => accuracy: 0.266
+INFO:perform_k_fold_cv:accs for k=50 is:[0.271, 0.288, 0.278, 0.269, 0.266]
+INFO:perform_k_fold_cv:====== 5-fold CV to compute accs for k=100 =======
+INFO:perform_k_fold_cv:fold:0
+Got 256 / 1000 correct => accuracy: 0.256
+INFO:perform_k_fold_cv:fold:1
+Got 270 / 1000 correct => accuracy: 0.27
+INFO:perform_k_fold_cv:fold:2
+Got 263 / 1000 correct => accuracy: 0.263
+INFO:perform_k_fold_cv:fold:3
+Got 256 / 1000 correct => accuracy: 0.256
+INFO:perform_k_fold_cv:fold:4
+Got 263 / 1000 correct => accuracy: 0.263
+INFO:perform_k_fold_cv:accs for k=100 is:[0.256, 0.27, 0.263, 0.256, 0.263]
+k_to_accs: {1: [0.263, 0.257, 0.264, 0.278, 0.266], 3: [0.239, 0.249, 0.24, 0.266, 0.254], 5: [0.248, 0.266, 0.28, 0.292, 0.28], 8: [0.262, 0.282, 0.273, 0.29, 0.273], 10: [0.265, 0.296, 0.276, 0.284, 0.28], 12: [0.26, 0.295, 0.279, 0.283, 0.28], 15: [0.252, 0.289, 0.278, 0.282, 0.274], 20: [0.27, 0.279, 0.279, 0.282, 0.285], 50: [0.271, 0.288, 0.278, 0.269, 0.266], 100: [0.256, 0.27, 0.263, 0.256, 0.263]}
+k = 1, accuracy = 0.263000
+k = 1, accuracy = 0.257000
+k = 1, accuracy = 0.264000
+k = 1, accuracy = 0.278000
+k = 1, accuracy = 0.266000
+k = 3, accuracy = 0.239000
+k = 3, accuracy = 0.249000
+k = 3, accuracy = 0.240000
+k = 3, accuracy = 0.266000
+k = 3, accuracy = 0.254000
+k = 5, accuracy = 0.248000
+k = 5, accuracy = 0.266000
+k = 5, accuracy = 0.280000
+k = 5, accuracy = 0.292000
+k = 5, accuracy = 0.280000
+k = 8, accuracy = 0.262000
+k = 8, accuracy = 0.282000
+k = 8, accuracy = 0.273000
+k = 8, accuracy = 0.290000
+k = 8, accuracy = 0.273000
+k = 10, accuracy = 0.265000
+k = 10, accuracy = 0.296000
+k = 10, accuracy = 0.276000
+k = 10, accuracy = 0.284000
+k = 10, accuracy = 0.280000
+k = 12, accuracy = 0.260000
+k = 12, accuracy = 0.295000
+k = 12, accuracy = 0.279000
+k = 12, accuracy = 0.283000
+k = 12, accuracy = 0.280000
+k = 15, accuracy = 0.252000
+k = 15, accuracy = 0.289000
+k = 15, accuracy = 0.278000
+k = 15, accuracy = 0.282000
+k = 15, accuracy = 0.274000
+k = 20, accuracy = 0.270000
+k = 20, accuracy = 0.279000
+k = 20, accuracy = 0.279000
+k = 20, accuracy = 0.282000
+k = 20, accuracy = 0.285000
+k = 50, accuracy = 0.271000
+k = 50, accuracy = 0.288000
+k = 50, accuracy = 0.278000
+k = 50, accuracy = 0.269000
+k = 50, accuracy = 0.266000
+k = 100, accuracy = 0.256000
+k = 100, accuracy = 0.270000
+k = 100, accuracy = 0.263000
+k = 100, accuracy = 0.256000
+k = 100, accuracy = 0.263000
+
+#######################################
+Based on the cross-validation results above, choose the best value for k,
+retrain the classifier using all the training data, and test it on the test
+data. You should be able to get above 28% accuracy on the test data.
+#######################################
+
+best k: 10
+Got 141 / 500 correct => accuracy: 0.282
