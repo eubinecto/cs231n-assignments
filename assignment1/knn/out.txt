@@ -5,10 +5,10 @@ load CIFAR_10 dataset from local.
 #######################################
 
 As a sanity check, we print out the size of the training and test data.
----Training data shape:
+--- Training data shape:
 (50000, 32, 32, 3)
 (num_train, img_width, img_height, channel_size)
----Training labels shape:
+--- Training labels shape:
 (50000,)
 (num_train,)
 ---Test data shape:
