@@ -13,6 +13,10 @@ In this exercise you will implement these steps and understand the basic Image C
 
 ## classification with KNN classifier
 
+some examples of CIFAR10 dataset, with labels|
+---|
+![](.readme_images/c53621f5.png)|
+
 We would now like to classify the test data with the kNN classifier. Recall that we can break down this process into two steps: 
 
 1. First we must compute the distances between all test examples and all train examples. 
@@ -26,6 +30,10 @@ First, open `cs231n/classifiers/k_nearest_neighbor.py` and implement the functio
 
 
 ## **Inline Question 1** 
+
+visualisation of L2 `dists` between `X` and `X_train`|
+---|
+![](.readme_images/69d29e89.png)|
 
 Notice the structured patterns in the distance matrix, where some rows or columns are visible brighter. (Note that with the default color scheme black indicates low distances while white indicates high distances.)
 

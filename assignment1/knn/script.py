@@ -123,12 +123,16 @@ def create_and_train_knn_cls(cifar10: Dataset) -> KNearestNeighbor:
     classifier.train(X=cifar10.X_train, y=cifar10.y_train)
     return classifier
 
-#
-#
-# # We can visualize the distance matrix: each row is a single test example and
-# # its distances to training examples
-# plt.imshow(dists, interpolation='none')
-# plt.show()
+
+def visualise_dists(dists: np.ndarray):
+    """
+    ===
+    We can visualize the distance matrix: each row is a single test example and
+    its distances to training examples
+    ===
+    """
+    plt.imshow(dists, interpolation='none')
+    plt.show()
 #
 # # -- inline question  1 --- #
 #
@@ -329,13 +333,13 @@ def main():
     print(cifar10.X_train.shape)
     print('---Test data shape:')
     print(cifar10.X_test.shape)
-
+    # knn classification
     print("\n======== classifying cifar10 image with KNN classifier =========")
     print(textwrap.dedent(create_and_train_knn_cls.__doc__))
     knn_cls = create_and_train_knn_cls(cifar10)
     print("no change to the training set:")
     print(np.array_equal(knn_cls.X_train, cifar10.X_train))
-
+    # compute dists
     print(textwrap.dedent(
         """
         ===
@@ -348,7 +352,9 @@ def main():
     dists = knn_cls.compute_distances_two_loops(cifar10.X_test)
     print("--- the shape of the dists matrix")
     print(dists.shape)
-
+    # visualise dists
+    print(textwrap.dedent(visualise_dists.__doc__))
+    visualise_dists(dists)
 
 
 if __name__ == '__main__':
