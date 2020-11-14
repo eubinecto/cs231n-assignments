@@ -1,11 +1,8 @@
 from __future__ import print_function
 
-from builtins import range
 from builtins import object
-import numpy as np
-from assignment1.cs231n.classifiers.linear_svm import *
+from assignment1.cs231n.classifiers.linear_svm.script import *
 from assignment1.cs231n.classifiers.softmax import *
-from past.builtins import xrange
 
 
 class LinearClassifier(object):
@@ -13,7 +10,8 @@ class LinearClassifier(object):
     def __init__(self):
         self.W = None
 
-    def train(self, X, y, learning_rate=1e-3, reg=1e-5, num_iters=100,
+    def train(self, X: np.array, y: np.array,
+              learning_rate=1e-3, reg=1e-5, num_iters=100,
               batch_size=200, verbose=False):
         """
         Train this linear classifier using stochastic gradient descent.
@@ -33,17 +31,17 @@ class LinearClassifier(object):
         A list containing the value of the loss function at each training iteration.
         """
         num_train, dim = X.shape
-        num_classes = np.max(y) + 1 # assume y takes values 0...K-1 where K is number of classes
+        # Note that it is not len(y)
+        num_classes = np.max(y) + 1  # assume y takes values 0...K-1 where K is number of classes
         if self.W is None:
             # lazily initialize W
+            # initialising it just with respect to normal distribution
+            # W: (D, C)
             self.W = 0.001 * np.random.randn(dim, num_classes)
 
         # Run stochastic gradient descent to optimize W
         loss_history = []
-        for it in range(num_iters):
-            X_batch = None
-            y_batch = None
-
+        for it in range(num_iters):  # for each "epoch"
             #########################################################################
             # TODO:                                                                 #
             # Sample batch_size elements from the training data and their           #
@@ -56,12 +54,20 @@ class LinearClassifier(object):
             # replacement is faster than sampling without replacement.              #
             #########################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
-            pass
-
+            # sample X_batch from X (N, D)
+            # sample y_batch from y (N,)
+            # batch size is given as a parameter of this function
+            # Note that we are sampling without replacement. So it is possible that
+            # some instances may be sampled multiple times, while some instances may not
+            # be used at all. But the advantage is that cost function will converge irregularly,
+            # leading to helping the model to escape local minimum and reach global minimum.
+            batch_indices = np.random.choice(batch_size)
+            X_batch = X[batch_indices]
+            y_batch = y[batch_indices]
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
             # evaluate loss and gradient
+            # using the loss function (hinge loss)  we have defined, compute the loss
             loss, grad = self.loss(X_batch, y_batch, reg)
             loss_history.append(loss)
 
@@ -71,8 +77,8 @@ class LinearClassifier(object):
             # Update the weights using the gradient and the learning rate.          #
             #########################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
-            pass
+            # update
+            self.W -= learning_rate * grad
 
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
@@ -81,7 +87,7 @@ class LinearClassifier(object):
 
         return loss_history
 
-    def predict(self, X):
+    def predict(self, X: np.array):
         """
         Use the trained weights of this linear classifier to predict labels for
         data points.
@@ -95,15 +101,16 @@ class LinearClassifier(object):
           array of length N, and each element is an integer giving the predicted
           class.
         """
-        y_pred = np.zeros(X.shape[0])
         ###########################################################################
         # TODO:                                                                   #
         # Implement this method. Store the predicted labels in y_pred.            #
         ###########################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
-        pass
-
+        # W: (D, C)
+        # X: (N, D)
+        # we have N samples, so we need N predictions
+        # y_pred: (N,)
+        y_pred = X @ self.W  # (N,D) dot (D,C) = (N, C)
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return y_pred
 
@@ -111,7 +118,6 @@ class LinearClassifier(object):
         """
         Compute the loss function and its derivative.
         Subclasses will override this.
-
         Inputs:
         - X_batch: A numpy array of shape (N, D) containing a minibatch of N
           data points; each point has dimension D.
@@ -122,7 +128,8 @@ class LinearClassifier(object):
         - loss as a single float
         - gradient with respect to self.W; an array of the same shape as W
         """
-        pass
+        # to be implemented by subclasses.
+        raise NotImplementedError
 
 
 class LinearSVM(LinearClassifier):
